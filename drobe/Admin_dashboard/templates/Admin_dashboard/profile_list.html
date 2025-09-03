@@ -1,0 +1,35 @@
+{% extends 'Admin_dashboard/admin_page.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business List</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/profilelist.css' %}"></link>
+    <img src="{{ MEDIA_URL }}profile_pics/your_profile_pic.jpg" alt="Profile Picture">
+
+</head>
+<body>
+    <div class="container">
+        <h1 class="profile-title"> Profile List</h1>
+        <ul>
+            {% for profile in profiles %}
+                <li>
+                    <div class="child-list">{{ profile.user }}</div>
+                    <div class="image">{{ profile.image }}>
+                        <form action="{% url 'profile_delete' pk=profile.pk %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit">Delete Profile</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <!-- Button to create a new profile -->
+    <a href="{% url 'profile_create' %}" class="create-profile-button">Create New Profile</a>
+</body>
+</html>
+{%endblock%}

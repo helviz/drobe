@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+* {
+    font-family: 'Ubuntu', sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 800px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+.profile-title {
+    color: #154c79;
+    font-size: 24px;
+    margin-bottom: 20px;
+    margin-left: 200px;
+}
+
+.child-list {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+    margin-left: 200px;
+}
+
+.image {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+    margin-left: 200px;
+}
+
+.image button{
+    background-color: #154c79;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.image button:hover{
+    background-color: grey;
+}
+.create-profile-button {
+    position: absolute;
+    top: 160px;
+    right: 80px;
+    background-color: #154c79;
+    padding: 5px 10px;
+    color: #fff !important;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.create-profile-button:hover{
+    background-color: #ccc;
+}

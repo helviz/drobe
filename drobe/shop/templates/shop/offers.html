@@ -1,0 +1,70 @@
+{% extends 'shop/main.html' %} {% block content %} {% load static%}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  #banner {
+    background-image: url("{% static 'images/banner-mine.jpg' %}");
+  }
+  #banner button {
+    background-image: url("{% static 'images/button.png' %}");
+  }
+  #sm-banner .banner-box {
+    background-image: url("{% static 'images/banner/b17.jpg' %}");
+  }
+  #sm-banner .banner-box-2 {
+    background-image: url("{% static 'images/banner/b10.jpg' %}");
+  }
+  #banner3 .banner-box {
+    background-image: url("{% static 'images/banner/b7.jpg' %}");
+  }
+  #banner3 .banner-box-2 {
+    background-image: url("{% static 'images/banner/b4.jpg' %}");
+  }
+  #banner3 .banner-box-3 {
+    background-image: url("{% static 'images/banner/b18.jpg' %}");
+  }
+  h1 {
+    color: #1d3a58; /* Text color */
+    font-family: Arial, sans-serif; /* Font family */
+    font-weight: bold; /* Font weight */
+    text-align: center; /* Text alignment */
+  }
+</style>
+<div style="height: 100px"></div>
+<section id="sm-banner" class="section-p1">
+  <h1 style="align: center">Choose a plan that works for you.</h1>
+</section>
+<section id="sm-banner" class="section-p1">
+  <!-- Small Banner Section -->
+  <div class="banner-box">
+    <h4>Crazy Deals</h4>
+    <h2>Buy 2 get 4 free</h2>
+    <span>The best classics are on sale</span>
+    <button class="white">Learn More</button>
+  </div>
+  <div class="banner-box banner-box-2">
+    <h4>rain/cold</h4>
+    <h2>Upcoming Season</h2>
+    <span>Anything to keep you warm</span>
+    <button class="white">Collection</button>
+  </div>
+</section>
+
+<section id="banner3">
+  <!-- Third Banner Section -->
+  <div class="banner-box">
+    <h2>SEASONAL SALE</h2>
+    <h3>50% OFF THIS SEASON!</h3>
+  </div>
+  <div class="banner-box banner-box-2">
+    <h2>GREAT FOOTWEAR</h2>
+    <h3>AT VERY AFFORDABLE PRICES!</h3>
+  </div>
+  <div class="banner-box banner-box-3">
+    <h2>T-SHIRTS</h2>
+    <h3>ALL NEW THIS SEASON!</h3>
+  </div>
+</section>
+{% endblock content %}

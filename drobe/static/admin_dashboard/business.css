@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+* {
+    font-family: 'Ubuntu', sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+.container {
+    max-width: 800px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-left:200px;
+}
+
+
+.child-title {
+    color: #154c79;
+    font-size: 24px;
+    margin-bottom: 20px;
+    
+}
+
+.child-list {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    cursor: pointer;
+    
+}
+
+.child-list:hover {
+    background-color: #ccc;
+}
+
+.select{
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin-top: 10px;
+    width: 30px;
+    
+}
+
+.business-details {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin-top: 10px;
+    
+}
+
+.business-details p {
+    margin: 5px 0;
+}
+.business-details button, .save-changes, .delete{
+    background-color: #154c79;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.business-details button, .save-changes, .delete:hover {
+    background-color: grey;
+}
+
+.create-business-button {
+    position: fixed;
+    color: #fff !important;
+    
+    margin-top: 30px;
+    padding: 10px 20px;
+    background-color: #154c79;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.create-business-button:hover{
+    background-color: #ccc;
+}
+
+.child-icon {
+    font-size: 24px; 
+    vertical-align: middle;
+    margin-right: 5px;
+}

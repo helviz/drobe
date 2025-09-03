@@ -1,0 +1,49 @@
+{% extends 'Admin_dashboard/admin_page.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business List</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/business.css' %}"></link>
+</head>
+<body>
+    <div class="container">
+        <h1 class="child-title">Business List</h1>
+        <ul>
+            {% for business in businesses %}
+                <li>
+                    <div class="child-list">{{ business.business_name }}</div>
+                    <div class="business-details" style="display: none;">
+                        <p><strong>Owner:</strong> {{ business.owner.username}}
+                            <a href="{% url 'business_edit' business.id %}">
+                                <span class="cild-icon"><ion-icon name="eye-outline"></ion-icon></span>
+                           </a>
+                        </p>
+                        <p><strong>Owner's First name:</strong> {{ business.first_name}}</p>
+                        <p><strong>Owner's Last name:</strong> {{ business.last_name}}</p>
+                        <p><strong>Owner's Email:</strong> {{ business.email}}</p>
+                        <form action="{% url 'business_delete' pk=business.pk %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="delete">Delete Business</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        
+        <!-- Button to create a new business -->
+        <a href="{% url 'business_create' %}" class="create-business-button">Create New Business</a>
+    </div>
+    <script>
+        document.querySelectorAll('.business-details').forEach(item => {
+            item.previousElementSibling.addEventListener('click', () => {
+                item.style.display = (item.style.display === 'none') ? 'block' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
+{%endblock%}

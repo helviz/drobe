@@ -1,0 +1,14 @@
+{% extends 'shop/main.html' %}
+{% block content %}
+<div class="mar-100 payment">
+    <div class="left">
+        <p>Please note you are being redirected to an external website to complete payment.</p>
+        <hr>
+    </div>
+    <div class="right">
+        <p>You will be redirected to Paypal our payment client, please come again!</p>
+        {{ paypal.render }}
+        <hr>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'Admin_dashboard/admin_page.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Customer</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/category_list.css' %}"></link>
+</head>
+<body>
+    <div class="container">
+         <h1>Create New Category</h1>
+    <form action="{% url 'category_create' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="create-category" class="edit-category">Create category</button>
+    </form>
+    </div>
+</body>
+</html>
+{%endblock%}

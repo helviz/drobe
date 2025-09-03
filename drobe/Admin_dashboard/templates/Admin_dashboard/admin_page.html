@@ -1,0 +1,111 @@
+{% extends 'admin/base_site.html' %}{% load static %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/styles.css' %}">
+{% endblock %}
+
+{% block branding %}
+    <h1 id="admin_page">Shoppie Admin Panel</h1>
+{% endblock %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<div class="topbar">
+    {% block topbar %}
+    {%endblock%}
+</div>
+{% block sidebar %}
+    <div class="sidebar">
+        <div class="container">
+            <div class="navigation">
+              <ul>
+                <li>
+                    <a href="">
+                         <span class="icon"><ion-icon name="logo-skype"></ion-icon></span>
+                        <span class="title">Shoppie</span>
+                    </a>
+                </li>
+            
+                  <li>
+                     <a href="{% url 'business_list' %}">
+                          <span class="icon"><ion-icon name="business-outline"></ion-icon></span>
+                         <span class="title">Business</span>
+                     </a>
+                 </li>
+                 <li>
+                      <a href="{% url 'customer_list'%}">
+                         <span class="icon"><ion-icon name="accessibility-outline"></ion-icon></span>
+                         <span class="title">Customer</span>
+                     </a>
+                 </li>
+                  <li>
+                      <a href="{% url 'profile_list'%}">
+                         <span class="icon"><ion-icon name="person-circle-outline"></ion-icon></span>
+                         <span class="title">Profiles</span>
+                     </a>
+                 </li>
+                  <li>
+                      <a href="">
+                         <span class="icon"><ion-icon name="people-circle-outline"></ion-icon></span>
+                         <span class="title">Groups</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="{% url 'user_details'%}">
+                         <span class="icon"><ion-icon name="people-circle-outline"></ion-icon></span>
+                         <span class="title">Users</span>
+                     </a>
+                 </li>
+                  <li>
+                     <a href="{% url 'category_list'%}">
+                         <span class="icon"><ion-icon name="folder-open-outline"></ion-icon></span>
+                         <span class="title">Category</span>
+                     </a>
+                 </li>
+                <li>
+                      <a href="{% url 'items_list'%}">
+                         <span class="icon"><ion-icon name="cart-outline"></ion-icon></span>
+                         <span class="title">Order items</span>
+                      </a>
+                 </li>
+                 <li>
+                      <a href="{% url 'orders_list' %}">
+                         <span class="icon"><ion-icon name="bag-handle-outline"></ion-icon></span>
+                         <span class="title">Orders</span>
+                     </a>
+                 </li>
+                <li>
+                      <a href="{% url 'product_list' %}">
+                          <span class="icon"><ion-icon name="grid-outline"></ion-icon></span>
+                          <span class="title">Products</span>
+                     </a>
+                 </li>
+                <li>
+                     <a href="{% url 'address_list' %}">
+                         <span class="icon"><ion-icon name="pin-outline"></ion-icon></span>
+                        <span class="title">Shipping Address</span>
+                     </a>
+                </li>
+    
+                <li>
+                    <a href="{% url 'logout' %}">
+                        <span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>
+                       <span class="title">Sign out</span>
+                    </a>
+               </li>
+              
+              </ul>
+            </div>
+            </div>
+     
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    </div>
+</html>
+
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'Admin_dashboard/admin_page.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Details</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/view_owner.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Owner Details</h1>
+        {% for person in persons%}
+        <form method="post">
+            <label for="owner">Owner:</label>
+            <input type="text" id="owner" name="owner" value="{{ business.owner.username }}"><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" value=""><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="{{ business.owner.email }}"><br>
+            <label for="business_name">Business Name:</label>
+            <input type="text" id="business_name" name="business_name" value="{{ business.business_name }}"><br>
+            <input type="submit" value="Save Changes">
+        </form>
+        <a href="{% url 'owner_details' business_id=business.id %}">View Owner Details</a>
+        {% endfor %}
+        
+        <div class="heading">Permissions</div>
+            <label for="active">Active
+            <input type="checkbox" id="is_active" name="active" {% if user.is_active %}checked{% endif %}><br></label>
+            <p>Designates whether this user should be treated as active. Unselect this instead of deleting accounts.</p>
+            <label for="staff">Staff Status
+                <input type="checkbox" id="staff" name="staff" {% if user.staff %}checked{% endif %}><br></label>
+            <p>Designates whether the user can log into this admin site.</p>
+            <label for="superuser">Superuser status
+                    <input type="checkbox" id="superuser" name="superuser" {% if user.superuser %}checked{% endif %}><br></label>
+                    <p>Designates that this user has all permissions without explicitly assigning them.</p>
+                    <div style="display: flex;">
+                        <div style="width: 50%;">
+                            <h3>Available groups</h3>
+                            <div class="scrollbar1" style="overflow-y: scroll; height: 200px;">
+                                <ul>
+                                    {% for group in available_groups %}
+                                    <li>{{ group.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 20px;">
+                            <ion-icon name="arrow-forward-circle-outline" style="cursor: pointer;" onmouseover="this.style.color='blue';" onmouseout="this.style.color='';"></ion-icon>
+                            <ion-icon name="arrow-back-circle-outline"style="cursor: pointer;" onmouseover="this.style.color='blue';" onmouseout="this.style.color='';"></ion-icon>
+                        </div>
+                        <div style="width: 50%;">
+                            <h3>User's groups</h3>
+                            <div class="scrollbar1" style="overflow-y: scroll; height: 200px;">
+                                <ul>
+                                    {% for group in user_groups %}
+                                    <li>{{ group.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+            <h2>Permissions</h2>
+            <div style="display: flex;">
+                <div style="width: 50%;">
+                    <h3>Available permissions</h3>
+                    <div class="p1" style="overflow-y: scroll; height: 200px;">
+                        <ul>
+                            {% for group in available_groups %}
+                            <li>{{ group.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; font-size: 20px;">
+                    <ion-icon name="arrow-forward-circle-outline" style="cursor: pointer;" onmouseover="this.style.color='blue';" onmouseout="this.style.color='';"></ion-icon>
+                    <ion-icon name="arrow-back-circle-outline"style="cursor: pointer;" onmouseover="this.style.color='blue';" onmouseout="this.style.color='';"></ion-icon>
+                </div>
+                <div style="width: 50%;">
+                    <h3>User's permissions</h3>
+                    <div class="p2" style="overflow-y: scroll; height: 200px;">
+                        <ul>
+                            {% for group in user_groups %}
+                            <li>{{ group.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <script>
+                function moveItem(direction) {
+                    var p1 = document.querySelector('.p1');
+                    var p2 = document.querySelector('.p2');
+                    var selectedItems = Array.from(p1.querySelectorAll('li input:checked')).map(input => input.parentNode);
+                    if (direction === 'forward') {
+                        selectedItems.forEach(item => {
+                            var clone = item.cloneNode(true);
+                            p2.appendChild(clone);
+                            item.remove();
+                        });
+                    } else if (direction === 'backward') {
+                        selectedItems.forEach(item => {
+                            var clone = item.cloneNode(true);
+                            p1.appendChild(clone);
+                            item.remove();
+                        });
+                    }
+                }
+            </script>
+                    
+    
+            
+            <input type="submit" value="Save Changes">
+            <input type="submit" value="Save and add another">
+            <input type="submit" value="Save and keep editing">
+
+        </form>
+    </div>
+</body>
+</html>
+{% endblock %}

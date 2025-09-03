@@ -1,0 +1,166 @@
+{% extends 'shop/main.html' %} {% block content %} {% load static %}
+<style>
+  #banner {
+    background-image: url("{% static 'images/sw.jpg' %}");
+  }
+  #banner button {
+    background-image: url("{% static 'images/button.png' %}");
+  }
+  #sm-banner .banner-box {
+    background-image: url("{% static 'images/banner/b17.jpg' %}");
+  }
+  #sm-banner .banner-box-2 {
+    background-image: url("{% static 'images/banner/b10.jpg' %}");
+  }
+  #banner3 .banner-box {
+    background-image: url("{% static 'images/banner/b7.jpg' %}");
+  }
+  #banner3 .banner-box-2 {
+    background-image: url("{% static 'images/banner/b4.jpg' %}");
+  }
+  #banner3 .banner-box-3 {
+    background-image: url("{% static 'images/banner/b18.jpg' %}");
+  }
+</style>
+<section id="banner">
+  <!-- Banner Section -->
+  <h4 class="yellow">Trade-in-offer</h4>
+  <h2 class="yellow">Super value deals</h2>
+  <h1>On all products</h1>
+  <p class="yellow">Save more with us!</p>
+  <!-- Shop Now Button -->
+  <a href="{% url 'shop' %}"><button>Shop Now</button></a>
+</section>
+
+<section id="feature" class="section-p1">
+  <!-- Feature Section -->
+  <div class="fe-box">
+    <img src="{% static 'images/features/f1.png' %}" alt="" />
+    <h6>Free shipping on big purchases!</h6>
+  </div>
+  <div class="fe-box">
+    <img src="{% static 'images/features/f2.png' %}" alt="" />
+    <h6>Online Order!</h6>
+  </div>
+  <div class="fe-box">
+    <img src="{% static 'images/features/f3.png' %}" alt="" />
+    <h6>Big Savings!</h6>
+  </div>
+  <div class="fe-box">
+    <img src="{% static 'images/features/f4.png' %}" alt="" />
+    <h6>Big Promotions Monthly!</h6>
+  </div>
+  <div class="fe-box">
+    <img src="{% static 'images/features/f5.png' %}" alt="" />
+    <h6>Happy customers!</h6>
+  </div>
+  <div class="fe-box">
+    <img src="{% static 'images/features/f6.png' %}" alt="" />
+    <h6>Support!</h6>
+  </div>
+</section>
+
+<h4 class="category-title">Categories</h4>
+<section id="categories">
+  {% for category in categories %}
+  <!-- Category Button -->
+  <a href="{% url 'category' category.category_name %}">
+    <button>{{ category.category_name }}</button>
+  </a>
+  {% endfor %}
+</section>
+
+<section id="products" class="section-p1">
+  {% for product in products %}
+  <!-- Product Container -->
+  <div class="pro-container">
+    <div class="pro">
+      <!-- Product Image -->
+      <img class="thumbnail" src="{{ product.imageurl }}" alt="product image" />
+      <div class="des">
+        <!-- Product Category -->
+        <span>{{ product.category }}</span>
+        <!-- Product Name -->
+        <h5>{{ product.name }}</h5>
+      </div>
+      <div class="star">
+        {% if product.rating > 0.0 %}
+        <!-- Display Star Rating -->
+        {% for rating in range %} {% if product.rating > rating %}
+        <i class="fas fa-star h"></i>
+        {% endif %} {% endfor %} {% else %}
+        <!-- Display Blank Star -->
+        <i class="fas fa-star b"></i>
+        {% endif %}
+      </div>
+      <!-- Product Price -->
+      <h4>{{ product.price|floatformat:0 }}</h4>
+    </div>
+    <div class="btns">
+      <!-- Add to Cart Button -->
+      <button
+        href="#"
+        class="update-cart"
+        data-product="{{ product.id }}"
+        data-action="add"
+      >
+        <i class="fal fa-shopping-cart add-cart"></i>
+      </button>
+      <!-- View Product Button -->
+      <a href="{% url 'view-product' product.id %}" class="view-btn">
+        <button>View</button>
+      </a>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+
+
+<footer>
+  <div class="footer">
+    <!-- Shop Information -->
+    <div class="col">
+      <span class="logo">DROBE</span>
+      <h4>Contacts</h4>
+      <p><strong>Address</strong>: Makerere Hill, DROBE</p>
+      <p><strong>Phone</strong>: +2565656565</p>
+      <p><strong>Hours</strong>: 24hrs-7days</p>
+    </div>
+    <!-- About Section -->
+    <div class="col">
+      <h4>About</h4>
+      <a href="{% url 'about' %}">About Us</a>
+      <a href="{% url 'tsandcs' %}">Terms and conditions</a>
+      <a href="{% url 'offers' %}">Offers</a>
+      <a href="mailto:drobe@gmail.com">Contact Us</a>
+      <a href="mailto:drobe.bugs@gmail.com">Report a Bug</a>
+    </div>
+    <!-- My Account Section -->
+    <div class="col">
+      <h4>My Account</h4>
+      <a href="{% url 'profile' %}">Profile</a>
+      <a href="{% url 'login' %}">Log In</a>
+      <a href="{% url 'cart' %}">My Cart</a>
+      <a href="{% url 'checkout' %}">Checkout</a>
+    </div>
+    <!-- Newsletter Section -->
+    <div class="col">
+      <h4>Newsletter</h4>
+      <input
+        type="text"
+        placeholder="Your email"
+        class="email"
+        name="email-news"
+      />
+      <a href="mailto:drobe@gmail.com"><button>Send Mail</button></a>
+    </div>
+  </div>
+  <!-- Copyright Section -->
+  <div class="copyright">
+      <hr style="width:100%;">
+    <p>Copyright© DROBE 2024. All Right Reserved.</p>
+  </div>
+</footer>
+
+{% endblock %}

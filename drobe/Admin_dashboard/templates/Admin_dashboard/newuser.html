@@ -1,0 +1,20 @@
+{% extends 'shop/main.html' %} {% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/login.css' %}"></link>
+</head>
+<body>
+    <div class="container">
+        <form action="{%url 'newuser'%}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="login">Add User</button>
+        </form>
+</body>
+</html>
+{%endblock%}

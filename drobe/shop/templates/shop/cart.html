@@ -1,0 +1,93 @@
+{% extends 'shop/main.html' %} {% load static %} {% block content %}
+<!-- Continue Shopping Button -->
+<div class="section-p1 mar-100">
+  <a class="btn btn-outline-dark" href="{% url 'shop' %}">
+    &#x2190; Continue Shopping
+  </a>
+</div>
+<br />
+<br />
+
+<!-- Cart Table -->
+<section id="cart" class="section-p1">
+  <table width="100%">
+    <thead>
+      <tr>
+        <td>IMAGE</td>
+        <td>PRODUCT</td>
+        <td>PRICE</td>
+        <td>QUANTITY</td>
+        <td>SUBTOTAL</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <!-- Item Image -->
+        <td>
+          <img class="product-img" src="{{ item.product.imageurl }}" alt="" />
+        </td>
+
+        <!-- Item Name -->
+        <td>{{ item.product.name }}</td>
+
+        <!-- Item Price -->
+        <td>Shs.{{ item.product.price|floatformat:0 }}</td>
+
+        <!-- Quantity Adjustment -->
+        <td class="qnty">
+          <!-- Increment Quantity -->
+          <span
+            class="chg-quantity update-cart"
+            data-action="add"
+            data-product="{{ item.product.id }}"
+            >+</span
+          >
+          <!-- Display Quantity -->
+          <span>{{ item.quantity }}</span>
+          <!-- Decrement Quantity -->
+          <span
+            class="chg-quantity update-cart"
+            data-action="remove"
+            data-product="{{ item.product.id }}"
+            >-</span
+          >
+        </td>
+
+        <!-- Item Subtotal -->
+        <td>Shs.{{ item.get_total }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<!-- Cart Details Section -->
+<section class="section-p1" id="cart-details">
+  <!-- Cart Total Heading -->
+  <h3>Cart Total</h3>
+
+  <!-- Cart Total Table -->
+  <table id="subtotal">
+    <thead>
+      <tr>
+        <td>Items</td>
+        <td>Total</td>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Total Number of Items and Cart Total -->
+      <tr>
+        <!-- Fetch Total Number of Items in Cart -->
+        <td>{{ order.get_cart_items }}</td>
+        <!-- Fetch Cart Total -->
+        <td>Shs.{{ order.get_cart_total }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Checkout Button -->
+  <a class="btn btn-success" href="{% url 'checkout' %}">Checkout</a>
+</section> 
+
+{% endblock content %}

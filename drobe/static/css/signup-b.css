@@ -1,0 +1,21 @@
+.after-btns {
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+    flex-direction: column;
+}
+.after-btns .btn-after {
+    margin-right: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 5px;
+    background-color: #f1f1f1;
+    color: #333;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: all 0.3s;
+}

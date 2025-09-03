@@ -1,0 +1,26 @@
+{% extends 'Admin_dashboard/admin_page.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/address.css' %}"></link>
+</head>
+<body>
+    <div class="container">
+        <h1>Create New Address</h1>
+        <form action="{% url 'create_address' %}" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="create-address">Create Address</button>
+        </form>
+    </div>
+    
+
+    </div>
+</body>
+</html>
+{%endblock%}

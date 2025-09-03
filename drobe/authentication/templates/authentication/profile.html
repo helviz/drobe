@@ -1,0 +1,313 @@
+{% extends 'shop/main.html' %} {% block content %}
+{% load static %}
+<script defer src="{% static 'js/profile.js' %}"></script>
+<!-- Container for the profile page -->
+<div class="profile">
+    <!-- Sidebar section -->
+    <div class="sidebar">
+        <!-- Logo section -->
+        <div class="logo"></div>
+        <!-- Main navigation menu -->
+        <ul class="main">
+            <!-- Dashboard default link (active) -->
+            <li id="link" class="dashboard active"><span><i class="fas fa-tachometer-alt"></i>Dashboard</span></li>
+            <!-- Profile link -->
+            <li id="link" class="profile"><span><i class="fas fa-user"></i>Profile</span></li>
+            <!-- Orders link -->
+            <li id="link" class="orders"><span ><i class="fas fa-briefcase"></i>Orders</span></li>
+            <!-- FAQ link -->
+            <li id="link" class="faq"><span><i class="fas fa-question-circle"></i>FAQ</span></li>
+            <!-- Log out link -->
+            <li ><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>Log Out</a></li>
+        </ul>
+    </div>
+    <!-- Main content section -->
+    <div class="main--content">
+        <div class="1-content content-section">
+        <!-- Header wrapper -->
+        {% if message %}
+        <div class="messages-wrapper">
+            {% for message in messages %}
+                    <small>{{ message }}</small>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="header--wrapper">
+                <!-- Header title -->
+                <div class="header--title">
+                    <span>Primary | {{ the_user }}</span>
+                    <h2>Dashboard</h2>
+                </div>
+                <!-- User information section -->
+                <div class="user--info">
+                    <!-- User image -->
+                    <img src="{{ user.profile.imageurl }}" alt="">
+                </div>
+            </div>
+            <!-- Card container -->
+            <div class="card--container">
+                <!-- Today's data title -->
+                {% if the_user == "Business" %}
+                <h3 class="main--title"><i class="fas fa-box-open"></i> Products</h3>
+                <!-- Card wrapper -->
+                <div class="product--wrapper">
+                    {% for product in products %}
+                    <!-- Product Container -->
+                    <div class="pro-container">
+                        <div class="pro">
+                            <!-- Product Image -->
+                            <img class="thumbnail" src="{{ product.imageurl }}" alt="product image" />
+                            <div class="des">
+                                <!-- Product Category -->
+                                <span>{{ product.category }}</span>
+                                <!-- Product Name -->
+                                <h5>{{ product.name }}</h5>
+                            </div>
+                            <div class="star">
+                                {% if product.rating > 0.0 %}
+                                <!-- Display Star Rating -->
+                                {% for rating in range %} {% if product.rating > rating %}
+                                <i class="fas fa-star h"></i>
+                                {% endif %} {% endfor %} {% else %}
+                                <!-- Display Blank Star -->
+                                <i class="fas fa-star b"></i>
+                                {% endif %}
+                            </div>
+                            <!-- Product Price -->
+                            <h4>{{ product.price|floatformat:0 }}</h4>
+                        </div>
+                        <div class="btns">
+                            <!-- View Product Button -->
+                            <a href="{% url 'view-product' product.id %}" class="view-btn">
+                                <button>View</button>
+                            </a>
+                            <a href="{% url 'delete-product' product.id %}" class="view-btn" style="background-color: rgba(255, 0, 0, 0.438);">
+                                <button>Delete</button>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'add-products' %}" class="add-btn">Add Products</a>
+                {% endif %}
+                {% if the_user == "Customer" %}
+                <div class="order--wrapper">
+                    <table>
+                        <!-- Table header -->
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Date Ordered</th>
+                                <th>Complete</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <!-- Table body -->
+                        {% if first_order != 0 %}
+                        <tbody>
+                            <!-- Example table row -->
+                            <tr>
+                                <td>{{ first_order.transaction_id }}</td>
+                                <td>{{ first_order.date_ordered }}</td>
+                                <td>{{ first_order.complete }}</td>
+                                <td class="col">
+                                    {% for item in first_order.get_items_in_cart %}
+                                    {% if item.product.owner == business_owner and the_user == "Business" %}
+                                    <p style="margin:0;padding:0">{{ item.product.name }} *{{ item.quantity }}</p>
+                                    Each at: {{ item.product.price }}
+                                    {% elif the_user == "Customer" %}
+                                    <p style="margin:0;padding:0">{{ item.product.name }} *{{ item.quantity }}</p>
+                                    Each at: {{ item.product.price }}
+                                    {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>{{ first_order.get_cart_total }}</td>
+                                <td><a href="{% url 'delete-order' first_order.pk %}"><button class="order-c-btn" type="button">Cancel
+                                            Order</button></a></td>
+                            </tr>
+                            <!-- Additional rows can be added here -->
+                        </tbody>
+                        {% endif %}
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="p-content content-section hidden">
+            <!-- Header wrapper -->
+            <div class="header--wrapper">
+                <!-- Header title -->
+                <div class="header--title">
+                    <span>{{ user.first_name }} {{ user.last_name }}</span>
+                    <h2>Profile</h2>
+                </div>
+                <!-- User information section -->
+                <div class="user--info">
+                    <!-- User image -->
+                    <img src="{{ user.profile.imageurl }}" alt="">
+                </div>
+            </div>
+            <div class="user-information">
+                <form action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ user_form.first_name.label }}
+                    {{ user_form.first_name }}
+                    {{ user_form.last_name.label }}
+                    {{ user_form.last_name }}
+                    {{ user_form.email.label }}
+                    {{ user_form.email }}
+                    {{ profile_form.image.label }}
+                    {{ profile_form.image }}
+                    <div class="btns">
+                        <button type="submit">Update</button>
+                        <a href="{% url 'password_reset' %}" style="padding-left: 20px;">Reset Password.</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="o-content content-section hidden">
+            <!-- Header wrapper -->
+            <div class="header--wrapper">
+                <!-- Header title -->
+                <div class="header--title">
+                    <span>{{ user.first_name }} {{ user.last_name }}</span>
+                    <h2>Orders</h2>
+                </div>
+                <!-- User information section -->
+                <div class="user--info">
+                    <!-- User image -->
+                    <img src="{{ user.profile.imageurl }}" alt="">
+                </div>
+            </div>
+            <div class="order--container">
+                <div class="order--wrapper">
+                    <table>
+                        <!-- Table header -->
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Date Ordered</th>
+                                <th>Complete</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <!-- Table body -->
+                        <tbody>
+                            <!-- Example table row -->
+                            {% for order in orders %}
+                            <tr>
+                                <td>{{ order.transaction_id }}</td>
+                                <td>{{ order.date_ordered }}</td>
+                                <td>{{ order.complete }}</td>
+                                <td class="col">
+                                    {% for item in order.get_items_in_cart %}
+                                        {% if item.product.owner == business_owner and the_user == "Business" %}
+                                            <p style="margin:0;padding:0">{{ item.product.name }} *{{ item.quantity }}</p>
+                                            Each at: {{ item.product.price }}
+                                        {% elif the_user == "Customer" %}
+                                            <p style="margin:0;padding:0">{{ item.product.name }} *{{ item.quantity }}</p>
+                                            Each at: {{ item.product.price }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>{{ order.get_cart_total }}</td>
+                                {% if order.complete == False %}
+                                <td><a href="{% url 'delete-order' order.pk %}"><button class="order-c-btn" type="button">Cancel Order</button></a></td>
+                                {% endif %}
+                                {% if order.complete == True %}
+                                <td style="text-align: center;"><i class="far fa-check"></i></td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            <!-- Additional rows can be added here -->
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+        </div>
+        <div class="f-content content-section hidden">
+            <!-- Header wrapper -->
+            <div class="header--wrapper">
+                <!-- Header title -->
+                <div class="header--title">
+                    <span>DROBE</span>
+                    <h2>FAQ</h2>
+                </div>
+                <!-- User information section -->
+                <div class="user--info">
+                    <!-- User image -->
+                    <img src="{{ user.profile.imageurl }}" alt="">
+                </div>
+            </div>
+            <div class="faq-section">
+                <div class="faq-wrapper">
+                    <div class="faq">
+                        <h3>How can I place an order?</h3>
+                        <p>To place an order, simply browse our products, select the items you wish to purchase, and proceed to
+                            checkout. Follow the prompts to enter your shipping and payment information, and your order will be
+                            confirmed once payment is processed.</p>
+                    </div>
+                    <div class="faq">
+                        <h3>What payment methods do you accept?</h3>
+                        <p>We accept various payment methods, including credit/debit cards (Visa, MasterCard, American Express), PayPal,
+                            and bank transfers. Please note that available payment methods may vary depending on your location.</p>
+                    </div>
+                    <div class="faq">
+                        <h3>What are your shipping options and delivery times?</h3>
+                        <p>We offer several shipping options, including standard, expedited, and express shipping. Delivery times vary
+                            depending on your location and the shipping method selected. You can view estimated delivery times during
+                            checkout.</p>
+                    </div>
+                    <div class="faq">
+                        <h3>Do you offer international shipping?</h3>
+                        <p>Yes, we offer international shipping to many countries worldwide. Shipping rates and delivery times may vary
+                            depending on the destination. Please note that additional customs duties and taxes may apply for
+                            international orders.</p>
+                    </div>
+                    <div class="faq">
+                        <h3>What is your return policy?</h3>
+                        <p>We want you to be completely satisfied with your purchase. If you're not happy with your order for any
+                            reason, you may return it within [X] days of receiving it for a refund or exchange. Please refer to our
+                            Returns & Exchanges page for detailed instructions and conditions.</p>
+                    </div>
+                    <div class="faq">
+                        <h3>How can I track my order?</h3>
+                        <p>Once your order has been shipped, you will receive a shipping confirmation email with a tracking number. You
+                            can use this tracking number to monitor the status of your shipment on our website or the carrier's website.
+                        </p>
+                    </div>
+                    <div class="faq">
+                        <h3>What if my order arrives damaged or is incorrect?</h3>
+                        <p>If your order arrives damaged or if there's an error with your order, please contact our customer support
+                            team immediately. We will work to resolve the issue and arrange for a replacement or refund as necessary.
+                        </p>
+                    </div>
+                    <div class="faq">
+                        <h3>Are my personal and payment details secure?</h3>
+                        <p>Yes, we take the security of your personal and payment information seriously. Our website uses
+                            industry-standard encryption technology to protect your data during transmission. Additionally, we adhere to
+                            strict privacy policies to safeguard your information.</p>
+                    </div>
+                    <div class="faq">
+                        <h3>Do you offer gift wrapping or personalized messages?</h3>
+                        <p>Yes, we offer gift wrapping services for select items, and you can also include a personalized message with
+                            your order. During checkout, you'll have the option to add gift wrapping and include a message for the
+                            recipient.</p>
+                    </div>
+                    <div class="faq">
+                        <h3>How can I contact customer support?</h3>
+                        <p>If you have any questions, concerns, or feedback, our customer support team is here to help. You can reach us
+                            via email at <a href="mailto:drobe.mak@gmail.com">drobe.mak@gmail.com</a>, by phone at [phone number], or
+                            through the contact form on our website.</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

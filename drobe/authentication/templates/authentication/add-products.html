@@ -1,0 +1,40 @@
+{% extends 'shop/main.html' %}
+{% block content %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/add-products.css' %}">
+<div class="mar-100 add-products">
+    <h2>Add Product</h2>
+    <form action="" class="form" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="left">
+            <div class="name">
+                {{ form.name.label }}:
+                {{ form.name }}
+            </div>
+            <div class="price">
+                {{ form.price.label }}:
+                {{ form.price }}
+            </div>
+            <div class="image">
+                {{ form.image.label }}:
+                {{ form.image }}
+            </div>
+            <div class="digital">
+                {{ form.digital.label }}: {{ form.digital }}
+            </div>
+            <div class="category">
+                {{ form.category.label }}:
+                {{ form.category }}
+            </div>
+        </div>
+        <div class="right">
+            <div class="desc">
+                {{ form.description.label }}:
+                {{ form.description }}
+            </div>
+        <button type="submit">ADD PRODUCT</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

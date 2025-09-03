@@ -1,0 +1,28 @@
+{% extends 'Admin_dashboard/admin_page.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/items_list.css' %}"></link>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Item</h1>
+        <form action="{% url 'create_item' %}" method="POST" >
+            {% csrf_token %}
+            <label for="item_name">Item Name:</label><br>
+            <input type="text" id="item_name" name="item_name"><br>
+            <label for="order">Order:</label><br>
+            <input type="order" id="order" name="order"><br>
+            <label for="quantity">Quantity:</label><br>
+            <input type="text" id="quantity" name="quantity"><br>
+            <button type="submit" class="create-item">Create item</button>
+        </form>
+    </div>
+</body>
+</html>
+{%endblock%}

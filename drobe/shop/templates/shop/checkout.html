@@ -1,0 +1,47 @@
+{% extends 'shop/main.html' %} {% load static %} {% block content %}
+<div class="section-p1 mar-100 checkout">
+      <form action="" id="form-checkout" method="POST">
+        {% csrf_token %}
+        <div class="credentials">
+            <div id="user-info">
+                <!-- User Information -->
+                <p>Billing Info </p>
+                {{ user_form }}
+            </div>
+            <div id="shipping-info">
+                <!-- Shipping Information -->
+                <p>Shipping Information</p>
+                {{ shipping_form }}
+            </div>
+        </div>
+        <div class="btns">
+            <!-- Form Submission Button -->
+            <button id="form-button" type="submit" class="btn btn-success">Continue</button>
+            <!-- Back to Cart Button -->
+            <a class="btn btn-success" href="{% url 'cart' %}"
+        >&#x2190; Back to cart</a>
+        </div>
+        <hr>
+      </form>
+  <div class="order">
+    <div class="box-elem">
+      <!-- Order Summary -->
+      <h3 class="order-title">Order Summary</h3>
+      <span class="summary"><span>Items</span><small>{{ order.get_cart_items }}</small></span>
+      <span class="summary"><span>Total </span><small>Shs.{{ order.get_cart_total|floatformat:2 }}</small></span>
+    </div>
+    <!-- Payment Information -->
+    <div class="hidden" id="payment-info">
+        <div id="paypal-button-container"></div>
+        <!-- Make Payment Button -->
+        <button id="make-payment" class="" type="button">Make Payment</button>
+      </div>
+      <hr>
+  </div>
+</div>
+
+<script>
+
+</script>
+
+{% endblock content %}

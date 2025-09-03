@@ -1,0 +1,62 @@
+{% extends 'shop/main.html' %} {% block content %}{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/signup-mods.css' %}">
+<div class="cont-r mar-100">
+    <div class="log-cont" id="log-cont">
+        <hr>
+        <!-- Login form -->
+        <form class="login-form" id="login-form" method="POST">
+            <!-- CSRF token for security -->
+            {% csrf_token %}
+            <!-- Shop information section -->
+            <div class="shop-info">
+                <!-- Logo and title -->
+                <div class="c">
+                    <h2>Sign Up</h2>
+                    <!-- Shop logo -->
+                    <img src="{% static 'images/logo-2.jpg' %}" alt="">
+                </div>
+                <!-- Help text for sign-up -->
+                <div class="help-text">
+                    <!-- Guidelines for username and password -->
+                    <span>- The username is required. It should be 150 characters or fewer. Letters, digits and @/./+/-/_ only.</span>
+                    <span>- Your password can’t be too similar to your other personal information.</span>
+                    <span>- Your password must contain at least 8 characters.</span>
+                    <span>- Your password can’t be a commonly used password.</span>
+                    <span>- Your password can’t be entirely numeric.</span>
+                </div>
+                <!-- Copyright information -->
+                <span id="Copyright">Copyright© DROBE 2024. All Rights Reserved.</span>
+            </div>
+            <!-- Credentials section -->
+            <div class="credentials">
+                <!-- Displaying non-field errors, if any -->
+                <div class="errors">
+                    {% if messages %}
+                    {% for message in messages %}
+                    {{ message }}
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                {% if form.non_field_errors %}
+                <div class="errors">
+                    {% for error in form.non_field_errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <!-- Render the form fields -->
+                {{ form }}
+
+                <!-- Submit button -->
+                <input type="submit" value="Sign Up" class="btn-sub" />
+                <!-- Sign in link -->
+                <div class="signup-link">
+                    <p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

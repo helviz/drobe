@@ -1,0 +1,41 @@
+from .views import *
+from django.urls import path
+
+
+
+urlpatterns = [
+    path('customlogin',customlogin, name="customlogin"),
+    path("newuser/",newuser, name="newuser"),
+    path('',admin_page,name="admin_page"),
+    path("business_list/",business_list,name="business_list"),
+    path("business_edit/<int:business_id>/",business_edit,name="business_edit"),
+    path("customer_edit/<int:customer_id>/",customer_edit,name="customer_edit"),
+    path("business_create/",business_create,name="business_create"),
+    path("business_delete/<int:pk>/",business_delete,name="business_delete"),
+    path("business_list/",business_detail,name="business_list"),
+    path("customer_create/",customer_create,name="customer_create"),
+    path("customer_list/",customer_list,name="customer_list"),
+    path("customer_delete/<int:pk>/",customer_delete,name="customer_delete"),
+    path("customer_detail/",customer_detail,name="customer_detail"),
+    path("profile_create/",profile_create,name="profile_create"),
+    path("profile_list/",profile_list,name="profile_list"),
+    path("profile_delete/<int:pk>/",profile_delete,name="profile_delete"),
+    path('user_details/', user_details, name='user_details'),
+    path('add_user/',add_user, name='add_user'),
+    path('edit_user/<int:user_id>/', edit_user, name='edit_user'),
+    path('category_list/',category_list, name='category_list'),
+    path('edit_category/<int:category_id>/',edit_category, name='edit_category'),
+    path('category_create/',category_create, name='category_create'),
+    path('items_list/',items_list, name='items_list'),
+    path('edit_item/<int:item_id>/', edit_item, name='edit_item'),
+    path('create_item/',create_item, name='create_item'),
+    path('orders_list/',orders_list, name='orders_list'),
+    path('view_order/<int:order_id>/',view_order, name='view_order'),
+    path('create_order/',create_order, name='create_order'),
+    path('product_list/',product_list, name='product_list'),
+    path('edit_product/<int:product_id>/',edit_product, name='edit_product'),
+    path('create_product/',create_product, name='create_product'),
+    path('address_list/',address_list, name='address_list'),
+    path('create_address/',create_address, name='create_address'),
+    path('edit_address/<int:address_id>/', edit_address, name='edit_address'),
+]

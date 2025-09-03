@@ -1,0 +1,24 @@
+{% extends 'Admin_dashboard/admin_page.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/address.css' %}"></link>
+</head>
+<body>
+    <div class="container">
+        <h1> Address:</h1>
+        <form  method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+        </form>
+     <button type="submit" class="save-changes">Save Changes</button>
+    </div>
+    
+</body>
+</html>
+{%endblock%}

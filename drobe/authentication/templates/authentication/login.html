@@ -1,0 +1,65 @@
+{% extends 'shop/main.html' %} {% block content %}{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<!-- Container for the login form -->
+<div class="cont-f mar-100">
+  <div class="log-cont">
+    <!-- Horizontal line -->
+    <hr />
+    <!-- The Login form -->
+    <form class="login-form" method="POST">
+      <!-- CSRF token for security -->
+      {% csrf_token %}
+      <!-- Shop information section -->
+      <div class="shop-info">
+        <!-- Shop logo and title -->
+        <div class="c">
+          <h2>Log In</h2>
+          <img src="{% static 'images/logo-2.jpg' %}" alt="" />
+        </div>
+        <!-- Copyright information -->
+        <span>Copyright© DROBE 2024. All Rights Reserved.</span>
+      </div>
+      <!-- Login credentials section -->
+      <div class="credentials">
+        <!-- Displaying non-field errors, if any -->
+        <div class="messages">
+            {% if messages %}
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% if form.non_field_errors %}
+        <div class="errors">
+          {% for error in form.non_field_errors %} {{ error }} {% endfor %}
+        </div>
+        {% endif %}
+        <!-- Username input field -->
+        <h3>{{ form.username.label }}</h3>
+        {{ form.username }}
+        <!-- Password input field -->
+        <h3>{{ form.password.label }}</h3>
+        {{ form.password }}
+        <!-- Submit button -->
+        <div class="btns">
+            <input type="submit" value="Log In" class="btn-sub" />
+            <a href="{% url 'password_reset' %}" style="padding-left:20px;">Forgot Password</a>
+        </div>
+        <!-- Sign up links -->
+        <div class="signup-link">
+          <p>Don't have an account? Sign Up Below...</p>
+          <!-- Buttons for signing up as customer or store owner -->
+          <div class="signup-btns">
+            <a class="signup-btn" href="{% url 'signup' %}">As a Customer</a>
+            <a class="signup-btn" href="{% url 'signup-b' %}"
+              >As a Store Owner</a
+            >
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'Admin_dashboard/admin_page.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/items_list.css' %}"></link>
+</head>
+<body>
+    <div class="container">
+        <h1>Order items</h1>
+        <div class="searchbar">
+            <form action="get">
+                <input type="text" name="search" class="form-control" placeholder="Search for item..." value="{{ search_query }}">
+                <button type="submit">Search</button>
+           </form>
+        </div>
+        <button class="add-item"><a href="{% url 'create_item' %}" class="add-item-link">Add item</a></button>
+        <button class="delete-item" id="delete-item">Delete item</button>
+        <ul>
+            {% for item in items%}
+                 <li>
+                    {{ item.order }} 
+                <a href="{% url 'edit_item' item.id %}"></a>
+                
+                </li>
+             {% endfor %}
+        
+        </ul>
+
+    </div>
+    <script>
+        document.getElementById('delete-item').addEventListener('click', function() {
+            let checkboxes = document.getElementsByClassName('userCheckbox');
+            let selectedIds = [];
+            for (let checkbox of checkboxes) {
+                if (checkbox.checked) {
+                    selectedIds.push(checkbox.getAttribute('data-id'));
+                }
+            }
+            if (selectedIds.length > 0) {
+                if (confirm('Are you sure you want to delete selected items?')) {
+                    // Here you can send an AJAX request to delete the selected users
+                    alert('Delete selected items with IDs: ' + selectedIds.join(', '));
+                }
+            } else {
+                alert('Please select at least one item to delete.');
+            }
+        });
+    </script>
+    
+</body>
+</html>
+{%endblock%}

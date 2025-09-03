@@ -1,0 +1,69 @@
+{% extends 'Admin_dashboard/admin_page.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/user_details.css' %}"></link>
+</head>
+<body>
+    <div class="container">
+        <h1>User Details</h1>
+        <div class="searchbar">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search for user...">
+        </div>
+        <div class="d-flex justify-content-between mb-3">
+            <a id="addUserButton" href="{% url 'add_user' %}">Add user</a>
+        </div>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td><input type="checkbox" class="userCheckbox"></td>
+                    <td><a href="{% url 'edit_user' user.id %}">{{ user.username }}</a></td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        // JavaScript to filter table rows based on input value
+        document.getElementById('searchInput').addEventListener('input', function() {
+            let input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById('searchInput');
+            filter = input.value.toUpperCase();
+            table = document.getElementsByTagName('table')[0];
+            tr = table.getElementsByTagName('tr');
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName('td')[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = '';
+                    } else {
+                        tr[i].style.display = 'none';
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'shop/main.html' %} {% block content %}
+
+<a href="{%  url 'shop' %}" class="stb-link">Back to Shop</a>
+
+<section id="product" class="section-p1">
+  <div class="product-image">
+    <img src="{{ product.imageurl }}" alt="product image" />
+  </div>
+  <div class="details">
+    <h6>{{ product.name }}</h6>
+    <h2>Shs.{{ product.price|floatformat:0 }}</h2>
+    <select>
+      <option value="">Select Size</option>
+      <option value="">L</option>
+      <option value="">XL</option>
+      <option value="">XXL</option>
+    </select>
+    <span>{{ quantity }} items</span>
+    <div class="buttons">
+      <!-- Add to cart button -->
+      <button
+        href="#"
+        class="update-cart cart-btn a"
+        data-product="{{ product.id }}"
+        data-action="add"
+      >
+        Add To Cart
+      </button>
+      <!-- Remove from cart button -->
+      <button
+        href="#"
+        class="update-cart cart-btn r"
+        data-product="{{ product.id }}"
+        data-action="remove"
+      >
+        Remove From Cart
+      </button>
+    </div>
+    <h4>Product Details</h4>
+    <span>{{ product.description }}</span>
+  </div>
+</section>
+{% endblock content %}

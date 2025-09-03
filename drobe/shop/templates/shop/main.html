@@ -1,0 +1,132 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="x-icon" href="{% static 'images/logo-2.jpg' %}">
+    <!-- External CSS files -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    {% if title == "PRODUCT" %}
+        <link rel="stylesheet" href="{% static 'css/product.css' %}">
+    {% endif %}
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" >
+    
+    <!-- Title -->
+    <title>
+        DROBE | {{ title }}
+    </title>
+    
+    <!-- Conditional JavaScript for signup -->
+    {% if title == "SIGNUP" %}
+        <script defer src="{% static 'js/signup.js' %}"></script>
+    {%  endif %}
+</head>
+<body>
+    <!-- Search bar -->
+    <div class="searchbar hide" id="searchbar">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <input type="text" name="searchterm" placeholder="Looking for something...">
+            <button type="button" id="exitButton">
+                <span></span>
+                <span></span>
+            </button>
+        </form>
+    </div>
+    
+    <!-- Header section -->
+    <section id="header">
+        <!-- Logo and navigation -->
+        <a class="logo" href="{% url 'home' %}">DROBE</a>
+        <div>
+            <ul id="navbar">
+                <!-- Navigation links with active class based on title -->
+                <li><a {% if title == 'SHOP' %} class="active" {% endif %} href="{% url 'shop' %}" >Shop</a></li>
+                <li><a {% if title == 'PROFILE' %} class="active" {% endif %} href="{% url 'profile' %}">Profile</a></li>
+                {% if not request.user.is_authenticated %}<li><a href="{% url 'login' %}">Log in</a></li>{% endif %}
+                {% if title == 'SHOP' %}<li><a href="#" id="searchButton"><i class="fas fa-search"></i></a></li>{% endif %}
+                <!-- Cart icon with item count -->
+                {% if title != "PASSWORD" %}
+                <li><a {% if title == 'CART' or title == 'CHECKOUT' %} class="active" {% endif %} href="{% url 'cart' %}">
+                    <i class="icon far fa-shopping-bag">
+                        <span id="cart-total">{{ cartItems }}</span>
+                    </i>
+                </a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </section>
+
+    <!-- Main content container -->
+    <div class="cont">
+        {% block content %}
+        {% endblock content %}
+    </div>
+  
+    <!-- External JavaScript files -->
+    <script src="{% static 'js/cart.js' %}" type="text/javascript"></script>
+    <script type="text/javascript">
+        // JavaScript variables and functions
+        var user = "{{ request.user }}";
+
+        // Function to get CSRF token from cookies
+        function getToken(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === name + "=") {
+                        cookieValue = decodeURIComponent(
+                            cookie.substring(name.length + 1)
+                        );
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // CSRF token retrieval
+        const csrftoken = getToken("csrftoken");
+
+        // Function to get cookie value by name
+        function getCookie(name) {
+            var cookieArr = document.cookie.split(";");
+            for (var i = 0; i < cookieArr.length; i++) {
+                var cookiePair = cookieArr[i].split("=");
+
+                if (name == cookiePair[0].trim()) {
+                    return decodeURIComponent(cookiePair[1]);
+                }
+            }
+            return null;
+        }
+
+        // Retrieve cart from cookies or create new one
+        var cart = JSON.parse(getCookie("cart"));
+        if (cart == undefined) {
+            cart = {};
+            console.log("Cart was created:", cart);
+            document.cookie = "cart=" + JSON.stringify(cart) + ";domain=;path=/";
+        }
+        
+        // Show/hide search bar functionality
+        var searchbar = document.getElementById("searchbar");
+        var exitButton = document.getElementById("exitButton");
+        var searchButton = document.getElementById("searchButton");
+        
+        searchButton.addEventListener('click', function () {
+            searchbar.classList.remove("hide");
+        });
+        
+        exitButton.addEventListener('click', function () {
+            searchbar.classList.add("hide");
+        });
+    </script>
+</body>
+</html>

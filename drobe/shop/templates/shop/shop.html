@@ -1,0 +1,89 @@
+{% extends 'shop/main.html' %}
+{% block content %}
+{% load static  %}
+
+
+{% if products %}
+<!-- If products are available, display them -->
+<div class="messages-shop">
+    {% for message in messages %}
+        <small>{{ message }}</small>
+    {% endfor %}
+</div>
+<section id="products" class="section-p1 mar-100">
+    {% for product in products %}
+    <!-- Loop through each product -->
+    <div class="pro-container">
+        <div class="pro">
+            <!-- Product thumbnail -->
+            <img class="thumbnail" src="{{ product.imageurl }}" alt="product image">
+            <div class="des">
+                <!-- Product category and name -->
+                <span>{{ product.category }}</span>
+                <h5>{{ product.name }}</h5>
+            </div>
+            <div class="star">
+                <!-- Display star rating based on product rating -->
+                {% if product.rating > 0.0 %}
+                    {% for rating in range %}
+                        {% if product.rating > rating %}
+                            <i class="fas fa-star h"></i>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <i class="fas fa-star b"></i>
+                {% endif %}
+            </div>
+            <!-- Product price -->
+            <h4>{{ product.price|floatformat:0 }}</h4>
+        </div>
+        <div class="btns">
+            <!-- Buttons to add to cart and view product details -->
+            <button href="#" class="update-cart" data-product="{{ product.id }}" data-action="add" type="button" ><i class="fal fa-shopping-cart add-cart"></i></button>
+            <a href="{% url 'view-product' product.id %}" class="view-btn"><button>View</button></a>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+{% else %}
+<!-- If no products are available, display a message -->
+<span style="display: block; margin-left:100px;" class="mar-100">Sadly no products fit that query.</span>
+{% endif %}
+<footer>
+    <!-- Footer section with contact information, about, my account links, newsletter subscription, and copyright information -->
+    <div class="footer">
+        <div class="col">
+            <span class="logo">DROBE</span>
+            <h4>Contacts</h4>
+            <p><strong>Address</strong>: Makerere Hill, DROBE</p>
+            <p><strong>Phone</strong>: +2565656565</p>
+            <p><strong>Hours</strong>: 24hrs-7days</p>
+        </div>
+        <div class="col">
+            <h4>About</h4>
+            <a href="{% url 'about' %}">About Us</a>
+            <a href="{% url 'tsandcs' %}">Terms and conditions</a>
+            <a href="#">Offers</a>
+            <a href="mailto:drobe@gmail.com">Contact Us</a>
+            <a href="mailto:drobe.bugs@gmail.com">Report a Bug</a>
+        </div>
+        <div class="col">
+            <h4>My Account</h4>
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'login' %}">Log In</a>
+            <a href="{% url 'cart' %}">My Cart</a>
+            <a href="{% url 'checkout' %}">Checkout</a>
+        </div>
+        <div class="col">
+            <h4>Newsletter</h4>
+            <input type="text" placeholder="Your email" class="email" name="email-news">
+            <a href="mailto:drobe@gmail.com"><button>Send Mail</button></a>
+        </div>
+    </div>
+    <div class="copyright">
+        <hr style="width:100%;">
+        <p>Copyright© DROBE 2024. All Right Reserved.</p>
+    </div>
+</footer>
+
+{% endblock %}

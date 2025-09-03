@@ -1,0 +1,47 @@
+{% extends 'Admin_dashboard/admin_page.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin_dashboard/address.css' %}"></link>
+</head>
+<body>
+    <div class="container">
+            <h1>Address</h1>
+            <button class="add-address"><a href="{% url 'create_address' %}" class="add-address-link">Add address</a></button>
+            <button class="delete-item" id="delete-item">Delete item</a></button>
+            <ul>
+                {% for address in addresses%}
+                <li><input type="checkbox" class="userCheckbox">
+                    <a href="{% url 'edit_address' address.id %}">{{ address.address}}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        
+    </div>
+    <script>
+        document.getElementById('delete-item').addEventListener('click', function() {
+            let checkboxes = document.getElementsByClassName('userCheckbox');
+            let selectedIds = [];
+            for (let checkbox of checkboxes) {
+                if (checkbox.checked) {
+                    selectedIds.push(checkbox.getAttribute('data-id'));
+                }
+            }
+            if (selectedIds.length > 0) {
+                if (confirm('Are you sure you want to delete selected address?')) {
+                    // Here you can send an AJAX request to delete the selected users
+                    alert('Delete selected address with IDs: ' + selectedIds.join(', '));
+                }
+            } else {
+                alert('Please select at least one address to delete.');
+            }
+        });
+    </script>
+</body>
+</html>
+{%endblock%}

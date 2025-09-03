@@ -1,0 +1,80 @@
+.add-products {
+    box-shadow:0 0 10px 0 rgba(0,0,0,0.1);
+    width: fit-content;
+    position:relative;
+    left:50%;
+    top:20%;
+    transform: translate(-50%, 20%);
+    padding:10px;
+    border-radius: 10px;
+}
+.add-products h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size:25px;
+}
+.add-products .form {
+    display: flex;
+    flex-direction: row;
+    gap:10px;
+}
+.add-products .form .right,
+.add-products .form .left {
+    flex:1;
+}
+.add-products .form .left > * {
+    display: flex;
+    flex-direction: row;
+    gap:10px;
+    padding:10px;
+    border-radius: 5px;
+    margin-bottom:10px;
+    border:1px solid #f1f1f1;
+}
+.add-products .form .left > * > label {
+    width: 100px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.add-products .form .left > * > select ,
+.add-products .form .left > * > input {
+    flex:1;
+    padding:5px;
+    border-radius: 5px;
+    border:1px solid #c9c8c8;
+    outline:none;
+}
+.add-products .form .right .desc {
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+    padding:10px;
+    border-radius: 5px;
+    margin-bottom:10px;
+    border:1px solid #f1f1f1;
+}
+.add-products .form .right > * > label {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.add-products .form .right > * > textarea {
+    padding:5px;
+    border-radius: 5px;
+    border:1px solid #c9c8c8;
+    outline:none;
+}
+.add-products .form button {
+    width:100%;
+    border:none;
+    padding: 5px 10px;
+    font-size:18px;
+    font-weight: 500;
+    transition:all linear 0.15s;
+}
+.add-products .form button:hover {
+    background-color: #1d3a58;
+    color:#ffffff;
+    border-radius: 3px;
+}

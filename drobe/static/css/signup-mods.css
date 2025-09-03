@@ -1,0 +1,51 @@
+/* Styles for a container with id 'token' */
+#token div {
+    /* Using flexbox for layout */
+    display: flex;
+    /* Arranging items horizontally */
+    flex-direction: row;
+    /* No gap between items */
+    gap:0px;
+    /* Full width */
+    width:100%;
+}
+
+/* Styles for input elements inside the container with id 'token' */
+#token div input {
+    /* Padding for input */
+    padding:7px 10px;
+    /* Border for input */
+    border:1px solid rgba(0,0,0,0.1);
+    /* Taking up 3/4th of the available space */
+    flex:3;
+    /* No outline */
+    outline:none;
+}
+
+/* Styles for button elements inside the container with id 'token' */
+#token div button {
+    /* No border for button */
+    border:none;
+    /* Color of text */
+    color:#000;
+    /* Taking up 1/4th of the available space */
+    flex:1;
+    /* Cursor style on hover */
+    cursor:pointer;
+}
+
+/* Styles for messages inside a container with class 'message' within the element with id 'login-cont' */
+#login-cont .message {
+    /* Padding for the message */
+    padding:10px 0 10px 10px;
+    /* Margin around the message */
+    margin:10px 0;
+    /* Background color of the message */
+    background-color: rgb(186, 216, 186);
+    /* Text color of the message */
+    color:green;
+    /* Border around the message */
+    border:1px solid green;
+}
+
+
