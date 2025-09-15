@@ -1,7 +1,7 @@
 # Drobe Clothing Application
 
 ## Project Overview
-Drobe is a modular e-commerce platform for clothing, built with Django MVC architecture. It supports user authentication, product catalog management, shopping cart, and order processing, with a scalable structure for future enhancements.
+Drobe is a single-seller platform for clothing, built with Django MVC architecture. It supports user authentication, product catalog management, shopping cart, and order processing, with a scalable structure for future enhancements.
 
 ## Features
 - **User Authentication & Profile Management**: Registration, login, password reset, profile editing, address management, order history, dashboard.
