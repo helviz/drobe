@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Your Shopping Cart{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 fw-bold">Your Shopping Cart</h1>
+
+{% if cart_items %}
+    <form action="{% url 'clear_cart' %}" method="post" class="mb-4 d-inline-block">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Clear Cart</button>
+    </form>
+
+    <div class="card p-4">
+        {% for item in cart_items %}
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3 {% if forloop.last %}border-0 pb-0 mb-0{% endif %}">
+
+                <!-- Product Image -->
+                <div class="d-flex align-items-center">
+                    {% if item.product_variant and item.product_variant.image %}
+                        <img src="{{ item.product_variant.image.url }}"
+                             alt="{{ item.product_variant.color }}"
+                             class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                    {% elif item.product.image %}
+                        <img src="{{ item.product.image.url }}"
+                             alt="{{ item.product.name }}"
+                             class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-secondary rounded me-3" style="width: 80px; height: 80px;"></div>
+                    {% endif %}
+
+                    <!-- Product Info -->
+                    <div>
+                        {% if item.product_variant %}
+                            <a href="{% url 'product_detail' item.product_variant.product.pk %}"
+                               class="h6 text-decoration-none text-primary">
+                               {{ item.product_variant.product.name }}
+                            </a>
+                            <p class="text-muted mb-1 small">{{ item.product_variant.size }} - {{ item.product_variant.color }}</p>
+                        {% else %}
+                            <a href="{% url 'product_detail' item.product.pk %}"
+                               class="h6 text-decoration-none text-primary">
+                               {{ item.product.name }}
+                            </a>
+                        {% endif %}
+
+                        <p class="mb-0">  Ugx. {{ item.get_unit_price|floatformat:2 }}</p>
+                    </div>
+                </div>
+
+                <!-- Quantity & Actions -->
+                <div class="d-flex align-items-center gap-2">
+                    <form action="{% url 'update_cart_item' item.pk %}" method="post" class="d-flex align-items-center">
+                        {% csrf_token %}
+                        <input type="number" name="quantity" id="quantity_{{ item.pk }}"
+                               value="{{ item.quantity }}" min="1"
+                               class="form-control form-control-sm text-center me-2" style="width: 70px;">
+                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                    </form>
+                    <form action="{% url 'remove_from_cart' item.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                    </form>
+                </div>
+
+            </div>
+        {% endfor %}
+
+        <!-- Total & Checkout -->
+        <div class="d-flex justify-content-end align-items-center border-top pt-3 mt-3">
+            <p class="h5 mb-0 me-3">Total:   Ugx. {{ total_price|floatformat:2 }}</p>
+            <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Proceed to Checkout</a>
+        </div>
+    </div>
+
+{% else %}
+    <p class="h6 text-secondary">Your cart is empty.
+       <a href="{% url 'product-list' %}" class="text-primary text-decoration-none">Start shopping!</a>
+    </p>
+{% endif %}
+{% endblock %}

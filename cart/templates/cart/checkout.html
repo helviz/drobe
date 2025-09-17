@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 fw-bold">Checkout</h1>
+
+<div class="row g-4">
+    {# Left Column: Shipping Form #}
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="h5 fw-semibold mb-3">Delivery Information</h2>
+                <form action="{% url 'process_order' %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_telephone" class="form-label">Telephone</label>
+                        <input type="text" id="id_telephone" name="telephone" class="form-control" placeholder="Enter your phone number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_destination" class="form-label">Destination</label>
+                        <textarea id="id_destination" name="destination" class="form-control" rows="3" placeholder="Enter your delivery address" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Place Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {# Right Column: Order Summary #}
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="h5 fw-semibold mb-3">Order Summary</h2>
+
+                {% if cart_items %}
+                    {% for item in cart_items %}
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2 {% if forloop.last %}border-0 pb-0 mb-0{% endif %}">
+                            <div class="d-flex align-items-center">
+                                {% if item.product_variant and item.product_variant.image %}
+                                    <img src="{{ item.product_variant.image.url }}" alt="{{ item.product_variant.color }}" class="rounded me-2" style="width:64px;height:64px;object-fit:cover;">
+                                {% elif item.product_variant %}
+                                    <img src="{{ item.product_variant.product.image.url }}" alt="{{ item.product_variant.product.name }}" class="rounded me-2" style="width:64px;height:64px;object-fit:cover;">
+                                {% else %}
+                                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="rounded me-2" style="width:64px;height:64px;object-fit:cover;">
+                                {% endif %}
+
+                                <div>
+                                    <p class="mb-0 fw-medium">
+                                        {% if item.product_variant %}{{ item.product_variant.product.name }}{% else %}{{ item.product.name }}{% endif %}
+                                    </p>
+                                    {% if item.product_variant %}
+                                        <small class="text-muted">{{ item.product_variant.size }} - {{ item.product_variant.color }}</small><br>
+                                    {% endif %}
+                                    <small class="text-muted">Quantity: {{ item.quantity }}</small>
+                                </div>
+                            </div>
+                            <p class="mb-0 fw-semibold">  Ugx. {{ item.subtotal|floatformat:2 }}</p>
+                        </div>
+                    {% endfor %}
+
+                    {# Totals #}
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span class="fw-semibold">  Ugx. {{ total_price|floatformat:2 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Shipping:</span>
+                            <span class="fw-semibold">  Ugx. 0.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Taxes:</span>
+                            <span class="fw-semibold">  Ugx. 0.00</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                            <span class="h6 fw-bold">Order Total:</span>
+                            <span class="h5 fw-bold">  Ugx. {{ total_price|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-secondary">Your cart is empty. <a href="{% url 'product-list' %}" class="text-primary text-decoration-none">Start shopping!</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
