@@ -1,7 +1,10 @@
-# users/urls.py
 from django.urls import path
-from .views import register_user,UserLoginView  
+from .views import register_view, CustomLoginView, profile_view
+from django.contrib.auth.views import LogoutView
+
 urlpatterns = [
-    path('register/', register_user, name='register'),
-    path('login/', UserLoginView.as_view(), name='login'),
+    path('register/', register_view, name='register'),
+    path('login/', CustomLoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(next_page='dashboard'), name='logout'),
+    path('profile/', profile_view, name='profile'),
 ]
