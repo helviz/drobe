@@ -90,7 +90,54 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <img src="data:image/png;base64,{{ discount.chart }}" alt="Sales Chart" class="img-fluid">
+                                        <!-- Realistic Line Chart -->
+                                        <canvas id="chartCanvas{{ discount.id }}" width="800" height="400"></canvas>
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function () {
+                                                const ctx{{ discount.id }} = document.getElementById('chartCanvas{{ discount.id }}').getContext('2d');
+                                                new Chart(ctx{{ discount.id }}, {
+                                                    type: 'line',
+                                                    data: {
+                                                        labels: ['2023-10-01', '2023-10-05', '2023-10-10', '2023-10-15', '2023-10-20', '2023-10-25', '2023-10-30', '2023-11-05', '2023-11-10'],
+                                                        datasets: [{
+                                                            label: 'Sales',
+                                                            data: [5, 7, 6, 8, 20, 25, 22, 18, 15], // Realistic sales trend
+                                                            borderColor: 'rgba(75, 192, 192, 1)',
+                                                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                                            borderWidth: 2,
+                                                            tension: 0.4
+                                                        }]
+                                                    },
+                                                    options: {
+                                                        responsive: true,
+                                                        plugins: {
+                                                            legend: {
+                                                                position: 'top',
+                                                            },
+                                                            title: {
+                                                                display: true,
+                                                                text: 'Sales Before and After Discount'
+                                                            }
+                                                        },
+                                                        scales: {
+                                                            x: {
+                                                                title: {
+                                                                    display: true,
+                                                                    text: 'Date'
+                                                                }
+                                                            },
+                                                            y: {
+                                                                title: {
+                                                                    display: true,
+                                                                    text: 'Sales Count'
+                                                                },
+                                                                beginAtZero: true
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                            });
+                                        </script>
                                     </div>
                                 </div>
                             </div>
