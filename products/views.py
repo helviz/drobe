@@ -16,6 +16,66 @@ from django.db.models import Q
 from .models import Product, Discount, Brand, Category
 
 
+from django.db.models import Count, F
+from django.db.models.functions import TruncDate
+from django.shortcuts import render
+import matplotlib.pyplot as plt
+import io
+import base64
+from cart.models import OrderItem
+from .models import Discount
+
+
+class DiscountListView(LoginRequiredMixin, ListView):
+    login_url = 'login'
+    model = Discount
+    template_name = 'dashboard/discounts/discount_list.html'
+    context_object_name = 'discounts'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        discounts = self.get_queryset()
+
+        # Attach chart data to each discount
+        for discount in discounts:
+            # Fetch sales data for products under this discount
+            sales_data = (
+                OrderItem.objects.filter(product__discounts=discount)
+                .annotate(order_date=TruncDate('order__created_at'))
+                .values('order_date')
+                .annotate(sales_count=Count('id'))
+                .order_by('order_date')
+            )
+
+            # Prepare data for the chart
+            dates = [entry['order_date'] for entry in sales_data]
+            sales = [entry['sales_count'] for entry in sales_data]
+
+            # Generate the chart
+            plt.figure(figsize=(8, 4))
+            plt.plot(dates, sales, marker='o', label='Sales')
+            plt.axvline(x=discount.start_date, color='red', linestyle='--', label='Discount Start')
+            plt.title(f"Sales Trend for Discount: {discount.name}")
+            plt.xlabel('Date')
+            plt.ylabel('Sales Count')
+            plt.legend()
+            plt.grid()
+
+            # Convert the chart to a base64 string
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png')
+            buf.seek(0)
+            chart_base64 = base64.b64encode(buf.read()).decode('utf-8')
+            buf.close()
+            plt.close()
+
+            # Attach the chart data to the discount object
+            discount.chart = chart_base64
+
+        context['discounts'] = discounts
+        return context
+
+        
 class HomePageView(TemplateView):
     template_name = 'dashboard/pages/home.html'
 
