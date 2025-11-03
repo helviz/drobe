@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .table-brand-thumbnail {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        border: 1px solid #e0e0e0;
+    }
+
+    .table th, .table td {
+        border-top: 1px solid #e9ecef; /* Lighter border for rows */
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa; /* Lighter hover effect */
+    }
+
+    /* Ensure tooltips work if using Bootstrap 5 */
+    .btn-outline-info:hover {
+        color: #fff;
+        background-color: #0dcaf0;
+        border-color: #0dcaf0;
+    }
+</style>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="display-6">Brands Management</h2>
+        <a href="{% url 'brand-add' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus-circle me-2"></i>Add Brand
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">Name</th>
+                            <th scope="col" class="py-3 px-4">Image</th>
+                            <th scope="col" class="py-3 px-4">Created At</th>
+                            <th scope="col" class="py-3 px-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for brand in brands %}
+                            <tr>
+                                <td class="py-3 px-4 align-middle">{{ brand.name }}</td>
+                                <td class="py-3 px-4 align-middle">
+                                    {% if brand.image %}
+                                        <img src="{{ brand.image.url }}" alt="{{ brand.name }}" class="table-brand-thumbnail rounded-circle">
+                                    {% else %}
+                                        <span class="text-muted small">No image</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 px-4 align-middle">{{ brand.created_at|date:"Y-m-d H:i" }}</td>
+                                <td class="py-3 px-4 align-middle text-end">
+                                    <a href="{% url 'brand-edit' brand.id %}" class="btn btn-sm btn-outline-info me-2" data-bs-toggle="tooltip" title="Edit Brand">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                    <a href="{% url 'brand-delete' brand.id %}" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Delete Brand">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    <i class="fas fa-box-open me-2"></i>No brands available. Start by adding one!
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

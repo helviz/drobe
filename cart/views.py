@@ -7,6 +7,10 @@ from django.views.decorators.http import require_POST
 from .models import Cart, CartItem, OrderItem, Order
 from products.models import Product, ProductVariant
 
+from django.db.models import Count, Sum
+from django.db.models.functions import TruncDate, TruncWeek, TruncMonth
+from datetime import timedelta
+from django.utils import timezone
 
   
 # Helpers
@@ -56,16 +60,14 @@ def _merge_cart_item(cart, item):
 
 
 def _get_item_price(item):
-    """Return price for a cart item, including variant adjustments and discounts."""
+    """Return price for a cart item, including discounts."""
     if item.product_variant:
-        base_price = item.product_variant.product.get_discounted_price()
-        return base_price + item.product_variant.price_adjustment
+        return item.product_variant.product.get_discounted_price()
     return item.product.get_discounted_price()
 
 
-
 def _get_item_name(item):
-    """Return display name for a cart item."""
+    """Return the display name for a cart item."""
     return str(item.product_variant or item.product)
 
 
@@ -263,7 +265,58 @@ def order_list(request):
         else:
             messages.error(request, "Invalid status selected.")
 
-        return redirect("order_list")
+        return redirect("order-list")
 
-    return render(request, "orders/order_list.html", {"orders": orders})
+    # Status counts for horizontal bar chart
+    status_counts = orders.values('status').annotate(count=Count('id')).order_by('-count')
+    status_data = {item['status']: item['count'] for item in status_counts}
 
+    # Prepare status counts in order (delivered, shipped, pending, returned)
+    status_order = ['delivered', 'shipped', 'pending', 'returned']
+    status_chart_data = []
+    for status in status_order:
+        status_chart_data.append({
+            'status': status,
+            'label': dict(Order.STATUS_CHOICES).get(status, status.title()),
+            'count': status_data.get(status, 0)
+        })
+
+    # Orders over time (last 30 days) for line chart
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+    daily_orders = (
+        orders.filter(date__gte=thirty_days_ago)
+        .annotate(day=TruncDate('date'))
+        .values('day')
+        .annotate(count=Count('id'))
+        .order_by('day')
+    )
+
+    # Orders by week (last 12 weeks)
+    twelve_weeks_ago = timezone.now() - timedelta(weeks=12)
+    weekly_orders = (
+        orders.filter(date__gte=twelve_weeks_ago)
+        .annotate(week=TruncWeek('date'))
+        .values('week')
+        .annotate(count=Count('id'))
+        .order_by('week')
+    )
+
+    # Orders by month (last 12 months)
+    twelve_months_ago = timezone.now() - timedelta(days=365)
+    monthly_orders = (
+        orders.filter(date__gte=twelve_months_ago)
+        .annotate(month=TruncMonth('date'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('month')
+    )
+
+    context = {
+        'orders': orders,
+        'status_chart_data': status_chart_data,
+        'daily_orders': list(daily_orders),
+        'weekly_orders': list(weekly_orders),
+        'monthly_orders': list(monthly_orders),
+    }
+
+    return render(request, "orders/order_list.html", context)

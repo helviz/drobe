@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Custom styling for table cells */
+    .table th, .table td {
+        border-top: 1px solid #e9ecef; /* Lighter border */
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .table thead th {
+        font-weight: 600; /* Slightly bolder header text */
+    }
+
+    /* Applies To column styling */
+    .table td.small {
+        font-size: 0.875em;
+    }
+
+    /* Tooltip custom styling (if needed, ensure Bootstrap JS is loaded for tooltips) */
+    .tooltip-inner {
+        background-color: #343a40;
+        color: #fff;
+    }
+    .tooltip.bs-tooltip-auto[data-popper-placement^=top] .tooltip-arrow::before {
+        border-top-color: #343a40;
+    }
+    .tooltip.bs-tooltip-auto[data-popper-placement^=bottom] .tooltip-arrow::before {
+        border-bottom-color: #343a40;
+    }
+</style>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="display-6">Manage Discounts</h2>
+        <a href="{% url 'discount-add' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-plus-circle me-2"></i>Add New Discount
+        </a>
+    </div>
+
+    <!-- Discounts Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th scope="col" class="py-3 px-4">Name</th>
+                            <th scope="col" class="py-3 px-4">Type</th>
+                            <th scope="col" class="py-3 px-4">Value</th>
+                            <th scope="col" class="py-3 px-4">Applies To</th>
+                            <th scope="col" class="py-3 px-4">Dates</th>
+                            <th scope="col" class="py-3 px-4 text-center">Priority</th>
+                            <th scope="col" class="py-3 px-4 text-center">Active</th>
+                            <th scope="col" class="py-3 px-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for discount in object_list %}
+                        <tr>
+                            <td class="py-3 px-4 align-middle fw-bold">{{ discount.name }}</td>
+                            <td class="py-3 px-4 align-middle">
+                                {% if discount.discount_type == 'PERCENTAGE' %}
+                                    <span class="badge bg-info text-dark">{{ discount.get_discount_type_display }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ discount.get_discount_type_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 align-middle">
+                                {% if discount.discount_type == 'PERCENTAGE' %}
+                                    <span class="fw-bold text-success">{{ discount.value }}%</span>
+                                {% else %}
+                                    <span class="fw-bold text-primary">${{ discount.value }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 align-middle small">
+                                {% if discount.products.exists %}
+                                    <span class="text-muted">Products:</span> <span class="fw-medium">{{ discount.products.all|join:", " }}</span><br>
+                                {% endif %}
+                                {% if discount.brands.exists %}
+                                    <span class="text-muted">Brands:</span> <span class="fw-medium">{{ discount.brands.all|join:", " }}</span><br>
+                                {% endif %}
+                                {% if discount.categories %}
+                                    <span class="text-muted">Categories:</span> <span class="fw-medium">{{ discount.categories|join:", " }}</span>
+                                {% endif %}
+                                {% if not discount.products.exists and not discount.brands.exists and not discount.categories %}
+                                    <span class="text-muted fst-italic">Applies to all</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 align-middle small">
+                                <span class="text-muted">Start:</span> {{ discount.start_date|date:"Y-m-d" }}<br>
+                                <span class="text-muted">End:</span> {{ discount.end_date|date:"Y-m-d" }}
+                            </td>
+                            <td class="py-3 px-4 align-middle text-center">
+                                <span class="badge bg-light text-dark border">{{ discount.priority }}</span>
+                            </td>
+                            <td class="py-3 px-4 align-middle text-center">
+                                {% if discount.active %}
+                                    <i class="fas fa-check-circle text-success fs-5" data-bs-toggle="tooltip" title="Active"></i>
+                                {% else %}
+                                    <i class="fas fa-times-circle text-danger fs-5" data-bs-toggle="tooltip" title="Inactive"></i>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 align-middle text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="{% url 'discount-edit' discount.pk %}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Edit Discount">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'discount-delete' discount.pk %}" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Delete Discount">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                <i class="fas fa-tags me-2"></i>No discounts found. Add your first discount!
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </a>
+            </li>
+            {% endif %}
+            {% for num in paginator.page_range %}
+                {% comment %} Only show a few pages around the current one for brevity {% endcomment %}
+                {% if num == page_obj.number or num == page_obj.number|add:'-1' or num == page_obj.number|add:'1' or num == 1 or num == paginator.num_pages %}
+                    {% if num == page_obj.number|add:'-2' and num > 1 %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% if num == page_obj.number|add:'2' and num < paginator.num_pages %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                    Next <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

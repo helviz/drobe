@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Product Variants for {{ product.name }}</h2>
+
+    <a href="{% url 'variant-add' pk=product.pk %}" class="btn btn-sm btn-success mb-3">
+        Add Variant
+    </a>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Size</th>
+                <th>Color</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for variant in variants %}
+            <tr>
+                <td>{{ variant.product.name }}</td>
+                <td>{{ variant.get_size_display }}</td>
+                <td>{{ variant.get_color_display }}</td>
+                <td>${{ variant.price|default:variant.product.price }}</td>
+                <td>{{ variant.stock }}</td>
+                <td>
+                    {% if variant.image %}
+                        <img src="{{ variant.image.url }}" alt="" width="50" class="img-thumbnail">
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'variant-edit' product_pk=product.pk pk=variant.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'variant-delete' product_pk=product.pk pk=variant.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No variants available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

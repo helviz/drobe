@@ -1,0 +1,28 @@
+<div class="bg-transparent text-dark" id="sidebar-wrapper">
+  <div class="sidebar-heading p-3 fs-4 fw-bold">Admin Panel</div>
+  <div class="mt-5"></div>
+  <div class="list-group list-group-flush d-flex flex-column flex-grow-1">
+    <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action bg-white text-dark">
+      <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+    </a>
+    <a href="{% url 'brand-list' %}" class="list-group-item list-group-item-action bg-white text-dark">
+      <i class="fas fa-tags me-2"></i> Manage Brands
+    </a>
+    <a href="{% url 'product-list' %}" class="list-group-item list-group-item-action bg-white text-dark">
+      <i class="fas fa-boxes me-2"></i> Manage Products
+    </a>
+    <a href="{% url 'order-list' %}" class="list-group-item list-group-item-action bg-white text-dark">
+      <i class="fas fa-shopping-cart me-2"></i> Manage Orders
+    </a>
+    <a href="{% url 'discount-list' %}" class="list-group-item list-group-item-action bg-white text-dark">
+      <i class="fas fa-percent me-2"></i> Manage Discounts
+    </a>
+    <form action="{% url 'logout' %}" method="post" class="mt-auto">
+    {% csrf_token %}
+    <button type="submit" class="list-group-item list-group-item-action bg-danger text-white border-0">
+        <i class="fas fa-sign-out-alt me-2"></i> Logout
+    </button>
+</form>
+
+  </div>
+</div>

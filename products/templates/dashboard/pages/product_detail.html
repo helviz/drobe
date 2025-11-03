@@ -1,0 +1,881 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+  /* Enhanced Modern Styles */
+  :root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.15);
+  }
+
+  body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  /* Product Image Enhancement */
+  .product-image-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-light);
+    position: sticky;
+    top: 20px;
+    overflow: hidden;
+  }
+
+  .product-image-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%);
+    pointer-events: none;
+  }
+
+  .product-image {
+    border-radius: 15px;
+    transition: all 0.4s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .product-image:hover {
+    transform: scale(1.02);
+  }
+
+  /* Product Info Section */
+  .product-info-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--shadow-light);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-info-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%);
+    pointer-events: none;
+  }
+
+  .product-title {
+    background: var(--dark-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+  }
+
+  .product-meta {
+    color: #718096;
+    font-size: 0.95rem;
+  }
+
+  .product-meta span {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+  }
+
+  /* Price Styling */
+  .discounted-price {
+    background: var(--secondary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+  }
+
+  .regular-price {
+    background: var(--success-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+  }
+
+  .original-price {
+    color: #a0aec0;
+    text-decoration: line-through;
+  }
+
+  /* Enhanced Alert */
+  .alert-success {
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+    border: 1px solid rgba(79, 172, 254, 0.2);
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+    color: #2d3748;
+  }
+
+  /* Form Enhancements */
+  .form-select,
+  .form-control {
+    border: 2px solid rgba(102, 126, 234, 0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+  }
+
+  .form-select:focus,
+  .form-control:focus {
+    border-color: rgba(102, 126, 234, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  /* Enhanced Buttons */
+  .btn-primary.btn-lg {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 25px;
+    padding: 15px 30px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  .btn-primary.btn-lg:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-success.btn-lg {
+    background: var(--success-gradient);
+    border: none;
+    border-radius: 25px;
+    padding: 15px 30px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+  }
+
+  .btn-success.btn-lg:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(79, 172, 254, 0.4);
+  }
+
+  /* Section Cards */
+  .section-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-top: 2rem;
+    box-shadow: var(--shadow-light);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%);
+    pointer-events: none;
+  }
+
+  .section-title {
+    background: var(--dark-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Review Cards */
+  .review-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Related Products Cards */
+  .related-product-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+
+  .related-product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .related-product-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .related-product-card:hover::before {
+    opacity: 1;
+  }
+
+  .related-product-card img {
+    transition: all 0.4s ease;
+    filter: brightness(0.95);
+  }
+
+  .related-product-card:hover img {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+
+  .btn-outline-primary.btn-sm {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-primary.btn-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+  }
+
+  /* Quantity Input Enhancement */
+  .quantity-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .quantity-input {
+    border: 2px solid rgba(102, 126, 234, 0.1);
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+  }
+
+  .quantity-input:focus {
+    border-color: rgba(102, 126, 234, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.1);
+  }
+
+  /* Star Rating Enhancement */
+  .star-rating {
+    color: #fbbf24;
+    font-size: 1.1rem;
+  }
+
+  /* No Reviews Message */
+  .no-reviews {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(248, 250, 252, 0.8);
+    border-radius: 15px;
+    color: #718096;
+  }
+
+  /* Form Labels Enhancement */
+  .form-label.fw-bold {
+    background: var(--dark-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 0.95rem;
+  }
+
+  /* Loading Animation for Images */
+  .related-product-card img,
+  .product-image {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in-out forwards;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Responsive Enhancements */
+  @media (max-width: 768px) {
+    .product-info-container,
+    .product-image-container,
+    .section-card {
+      padding: 1.5rem;
+    }
+
+    .product-title {
+      font-size: 1.8rem;
+    }
+
+    .related-product-card img {
+      height: 150px;
+    }
+  }
+
+  /* Hover Effects */
+  .product-info-container,
+  .product-image-container,
+  .section-card {
+    transition: all 0.3s ease;
+  }
+
+  .product-info-container:hover,
+  .section-card:hover {
+    box-shadow: var(--shadow-heavy);
+  }
+  /* Rating Overview Styles */
+    .rating-overview {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-light);
+    }
+
+    .rating-summary {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .overall-rating {
+      text-align: center;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+      border-radius: 15px;
+      min-width: 200px;
+    }
+
+    .overall-rating-number {
+      font-size: 3.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .overall-rating-stars {
+      font-size: 1.5rem;
+      color: #fbbf24;
+      margin: 0.5rem 0;
+      letter-spacing: 2px;
+    }
+
+    .overall-rating-text {
+      color: #718096;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .rating-chart-container {
+      flex: 1;
+      min-width: 300px;
+      max-width: 600px;
+      height: 250px;
+      position: relative;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .rating-summary {
+        flex-direction: column;
+      }
+
+      .rating-chart-container {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .overall-rating {
+        width: 100%;
+      }
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-6 mb-4 mb-md-0">
+            <div class="product-image-container">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid product-image">
+                {% else %}
+                    <img src="{% static 'images/default-product.png' %}" alt="No image" class="img-fluid product-image">
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-md-6">
+            <div class="product-info-container">
+                <h1 class="product-title fw-bolder fs-1 mb-2">{{ product.name }}</h1>
+                <p class="product-meta fs-6 mb-1">Brand: <span class="fw-semibold">{{ product.brand.name }}</span></p>
+                <p class="product-meta fs-6 mb-3">Category: <span class="fw-semibold">{{ product.category }}</span></p>
+                <p class="lead mb-4" style="color: #4a5568;">{{ product.description }}</p>
+
+                {% if discounts %}
+                  <!-- Discounted price with original crossed out -->
+                  <h3 class="discounted-price fw-bolder fs-2 mb-1 text-success">
+                    Ugx. {{ discounted_price }}
+                  </h3>
+                  <p class="original-price small mb-3 text-success">
+                    <del>Ugx. {{ product.price }}</del>
+                  </p>
+
+                  <div class="alert alert-success alert-dismissible fade show py-2 mb-4" role="alert">
+                      <strong>Discount Available!</strong> Grab it now!
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                  {% else %}
+                  <!-- Normal price when no discounts -->
+                  <h3 class="regular-price fw-bolder fs-2 mb-3">
+                    Ugx. {{ product.price }}
+                  </h3>
+                {% endif %}
+
+                <!-- Add to Cart Form -->
+                <form method="post" action="{% url 'add_to_cart' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+
+                    {% if variants %}
+    <div class="mb-4 p-4 border rounded-3 bg-light">
+        <input type="hidden" name="product_variant_id" id="selectedVariantId" required>
+
+        {# Group variants by size and color for easier rendering #}
+        {% regroup variants by size as variants_by_size %}
+        {% regroup variants by color as variants_by_color %}
+
+        {# --- Size Selection --- #}
+        <div class="mb-3">
+            <label class="form-label fs-5 fw-bold text-primary mb-2">
+                <i class="fas fa-ruler me-2"></i>Select Size:
+            </label>
+            <div class="d-flex flex-wrap gap-2" id="size-options">
+                {% for size_group in variants_by_size %}
+                    <input type="radio" class="btn-check" name="selected_size" id="size-{{ size_group.grouper }}" autocomplete="off" value="{{ size_group.grouper }}">
+                    <label class="btn btn-outline-secondary size-option" for="size-{{ size_group.grouper }}">{{ size_group.grouper }}</label>
+                {% endfor %}
+            </div>
+            <div class="form-text mt-1 text-muted">Choose the size that fits you best.</div>
+        </div>
+
+        {# --- Color Selection --- #}
+        <div class="mb-3">
+            <label class="form-label fs-5 fw-bold text-primary mb-2">
+                <i class="fas fa-palette me-2"></i>Select Color:
+            </label>
+            <div class="d-flex flex-wrap gap-2" id="color-options">
+                {% for color_group in variants_by_color %}
+                    <input type="radio" class="btn-check" name="selected_color" id="color-{{ color_group.grouper }}" autocomplete="off" value="{{ color_group.grouper }}">
+                    <label class="btn btn-outline-secondary color-option" for="color-{{ color_group.grouper }}">{{ color_group.grouper }}</label>
+                {% endfor %}
+            </div>
+            <div class="form-text mt-1 text-muted">Pick your favorite color.</div>
+        </div>
+
+        {# --- Display Selected Variant Info --- #}
+        <div class="mt-4 p-3 border rounded bg-white shadow-sm d-flex align-items-center justify-content-between">
+            <div>
+                <span class="fs-6 fw-bold text-dark me-2">Selected Variant:</span>
+                <span id="selected-variant-display" class="fs-6 text-muted fst-italic">Please select size and color</span>
+            </div>
+            <div class="fs-4 fw-bold text-success" id="variant-price-display" style="display: none;">
+                ${{ product.get_discounted_price|floatformat:2 }} {# Fallback to base product price or default if no variant selected #}
+            </div>
+        </div>
+
+        <div id="variant-status" class="mt-2 text-danger fw-bold"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sizeOptions = document.querySelectorAll('#size-options .btn-check');
+            const colorOptions = document.querySelectorAll('#color-options .btn-check');
+            const selectedVariantIdInput = document.getElementById('selectedVariantId');
+            const selectedVariantDisplay = document.getElementById('selected-variant-display');
+            const variantPriceDisplay = document.getElementById('variant-price-display');
+            const variantStatus = document.getElementById('variant-status');
+
+            // Convert Django variants data to a JavaScript object for easier lookup
+            const allVariants = [
+                {% for variant in variants %}
+                    {
+                        id: {{ variant.id }},
+                        size: '{{ variant.size }}',
+                        color: '{{ variant.color }}',
+                        price: {{ variant.price_adjustment|add:product.price }},
+                        stock: {{ variant.stock|default:0 }} // Assuming a stock field exists
+                    },
+                {% endfor %}
+            ];
+
+            const updateVariantSelection = () => {
+                const selectedSize = document.querySelector('input[name="selected_size"]:checked')?.value;
+                const selectedColor = document.querySelector('input[name="selected_color"]:checked')?.value;
+
+                selectedVariantIdInput.value = ''; // Reset variant ID
+                selectedVariantDisplay.textContent = 'Please select size and color';
+                variantPriceDisplay.textContent = '${{ product.get_discounted_price|floatformat}}'; // Reset to base price
+                variantStatus.textContent = ''; // Clear status
+
+                if (selectedSize && selectedColor) {
+                    const matchedVariant = allVariants.find(v => v.size === selectedSize && v.color === selectedColor);
+
+                    if (matchedVariant) {
+                        selectedVariantIdInput.value = matchedVariant.id;
+                        selectedVariantDisplay.textContent = `${selectedSize} / ${selectedColor}`;
+                        variantPriceDisplay.textContent = `$${matchedVariant.price.toFixed(2)}`;
+
+                        if (matchedVariant.stock > 0) {
+                            variantStatus.textContent = `In Stock: ${matchedVariant.stock} units`;
+                            variantStatus.classList.remove('text-danger');
+                            variantStatus.classList.add('text-success');
+                        } else {
+                            variantStatus.textContent = 'Out of Stock!';
+                            variantStatus.classList.remove('text-success');
+                            variantStatus.classList.add('text-danger');
+                        }
+                    } else {
+                        selectedVariantDisplay.textContent = `No variant found for ${selectedSize} / ${selectedColor}`;
+                        variantStatus.textContent = 'This combination is not available.';
+                        variantStatus.classList.remove('text-success');
+                        variantStatus.classList.add('text-danger');
+                    }
+                }
+            };
+
+            sizeOptions.forEach(option => option.addEventListener('change', updateVariantSelection));
+            colorOptions.forEach(option => option.addEventListener('change', updateVariantSelection));
+
+            // Initial call in case default values are pre-selected
+            updateVariantSelection();
+        });
+    </script>
+{% endif %}
+
+                        <div class="mb-3 quantity-container">
+                        <label for="quantity" class="form-label fw-bold mb-0">Quantity</label>
+                        <input type="number" name="quantity" id="quantity" value="1" min="1" class="form-control quantity-input" style="width: 80px;">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg mt-3">
+                        <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Reviews -->
+    <div class="section-card">
+        <h4 class="section-title">Customer Reviews</h4>
+
+        {% if total_reviews > 0 %}
+            <div class="rating-overview">
+                <div class="rating-summary">
+                    <!-- Overall Rating Summary -->
+                    <div class="overall-rating">
+                        <div class="overall-rating-number">{{ avg_rating }}</div>
+                        <div class="overall-rating-stars">
+                            {% with full_stars=avg_rating|floatformat:0|add:0 %}
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= full_stars %}
+                                        ★
+                                    {% else %}
+                                        ☆
+                                    {% endif %}
+                                {% endfor %}
+                            {% endwith %}
+                        </div>
+                        <div class="overall-rating-text">Based on {{ total_reviews }} review{{ total_reviews|pluralize }}</div>
+                    </div>
+
+                    <!-- Chart.js Horizontal Bar Chart -->
+                    <div class="rating-chart-container">
+                        <canvas id="ratingChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Individual Reviews -->
+            {% for review in reviews %}
+                <div class="review-card">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-1 text-muted">
+                            <span class="fw-bold text-dark">{{ review.user.username }}</span> -
+                            <span class="star-rating">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                                <span class="fw-semibold">{{ review.rating }}</span>
+                            </span>
+                        </h6>
+                        <p class="card-text" style="color: #4a5568;">{{ review.comment }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-reviews">
+                <p class="mb-0">No reviews yet. Be the first to review this product!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Add a Review Form -->
+    {% if user.is_authenticated %}
+        <div class="section-card">
+            <h5 class="section-title">Add Your Review</h5>
+            <form method="post" action="{% url 'product_detail' product.pk %}">
+                {% csrf_token %}
+                {{ review_form.non_field_errors }}
+
+                {% if variants %}
+                    <div class="mb-3">
+                        <label for="id_variant" class="form-label fw-bold">Select Variant (optional)</label>
+                        {{ review_form.variant|add_class:"form-select" }}
+                        {% if review_form.variant.errors %}
+                            <div class="text-danger small mt-1">{{ review_form.variant.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label for="id_rating" class="form-label fw-bold">Rating (1-5)</label>
+                    {{ review_form.rating|add_class:"form-control" }}
+                    {% if review_form.rating.errors %}
+                        <div class="text-danger small mt-1">{{ review_form.rating.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_comment" class="form-label fw-bold">Comment</label>
+                    {{ review_form.comment|add_class:"form-control" }}
+                    {% if review_form.comment.errors %}
+                        <div class="text-danger small mt-1">{{ review_form.comment.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-success btn-lg">Submit Review</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="section-card">
+            <p class="text-muted mb-0">Please <a href="{% url 'login' %}" style="color: #667eea; text-decoration: none; font-weight: 600;">login</a> to submit a review.</p>
+        </div>
+    {% endif %}
+
+    <!-- Related Products -->
+    {% if related_products %}
+        <div class="section-card">
+            <h4 class="section-title">Related Products</h4>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                {% for related in related_products %}
+                    <div class="col">
+                        <div class="card h-100 related-product-card">
+                            {% if related.image %}
+                                <img src="{{ related.image.url }}" class="card-img-top object-fit-cover" alt="{{ related.name }}" style="height: 200px;">
+                            {% else %}
+                                <img src="{% static 'images/default-product.png' %}" class="card-img-top object-fit-cover" alt="No image" style="height: 200px;">
+                            {% endif %}
+                            <div class="card-body text-center">
+                                <h6 class="card-title fw-semibold text-truncate mb-1" style="color: #2d3748;">{{ related.name }}</h6>
+                                <p class="text-muted mb-0">${{ related.price }}</p>
+                            </div>
+                            <div class="card-footer bg-transparent border-0 text-center pb-3">
+                                <a href="{% url 'product_detail' related.pk %}" class="btn btn-outline-primary btn-sm mt-2">View</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+    {% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% if total_reviews > 0 %}
+    const ctx = document.getElementById('ratingChart');
+
+    if (ctx) {
+        // Prepare data from Django context
+        const ratingData = [
+            {% for stat in rating_stats %}
+                {{ stat.count }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        const ratingLabels = [
+            '★★★★★ (5 stars)',
+            '★★★★☆ (4 stars)',
+            '★★★☆☆ (3 stars)',
+            '★★☆☆☆ (2 stars)',
+            '★☆☆☆☆ (1 star)'
+        ];
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ratingLabels,
+                datasets: [{
+                    label: 'Number of Reviews',
+                    data: ratingData,
+                    backgroundColor: [
+                        'rgba(251, 191, 36, 0.8)',
+                        'rgba(251, 191, 36, 0.7)',
+                        'rgba(251, 191, 36, 0.6)',
+                        'rgba(251, 191, 36, 0.5)',
+                        'rgba(251, 191, 36, 0.4)'
+                    ],
+                    borderColor: [
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(245, 158, 11, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    barThickness: 30
+                }]
+            },
+            options: {
+                indexAxis: 'y', // This makes it horizontal
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        callbacks: {
+                            label: function(context) {
+                                const count = context.parsed.x;
+                                const total = {{ total_reviews }};
+                                const percentage = ((count / total) * 100).toFixed(1);
+                                return `${count} reviews (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: {
+                                size: 12
+                            },
+                            color: '#4a5568'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            font: {
+                                size: 13,
+                                weight: '500'
+                            },
+                            color: '#2d3748'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    }
+    {% endif %}
+});
+</script>
+{% endblock %}
+{% endblock %}

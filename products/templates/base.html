@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        body {
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            margin: 0;
+        }
+        #wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Fixed sidebar */
+        #sidebar-wrapper {
+            position: fixed;       /* Stay fixed on screen */
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;         /* Full viewport height */
+            z-index: 1000;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease-in-out;
+            overflow-y: auto;      /* Scroll if sidebar content overflows */
+        }
+        #wrapper.toggled #sidebar-wrapper {
+            margin-left: -250px;
+        }
+
+        /* Page content pushed to the right */
+        #page-content-wrapper {
+            flex: 1;
+            margin-left: 250px;    /* Same as sidebar width */
+            transition: all 0.3s;
+            overflow-y: auto;
+            width: 100%;
+
+
+
+        }
+
+        /* Sidebar list styles */
+        #sidebar-wrapper .list-group-item {
+            border: none;
+            padding: 1rem 1.5rem;
+            transition: background-color 0.2s, color 0.2s;
+            color: #343a40;
+        }
+        #wrapper.toggled #sidebar-wrapper {
+          margin-left: -250px;
+        }
+
+        /* Fix: shift content back when sidebar is closed */
+        #wrapper.toggled #page-content-wrapper {
+          margin-left: 0;
+        }
+
+        #sidebar-wrapper .list-group-item.active {
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 0.25rem;
+        }
+
+        .sidebar-heading {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding-bottom: 1rem !important;
+            margin-bottom: 1rem;
+            color: #212529;
+            font-size: 1.5rem !important;
+        }
+
+        #sidebar-wrapper {
+          background-color: #f8f9fa; /* subtle background */
+          min-height: 100vh; /* full height */
+          border-right: 1px solid #dee2e6;
+        }
+
+        /* Base styles for links */
+        #sidebar-wrapper .list-group-item {
+          transition: all 0.2s ease-in-out;
+          border: none; /* cleaner look */
+          padding: 12px 20px;
+        }
+
+        /* Hover effect: background + slight lift */
+        #sidebar-wrapper .list-group-item:hover {
+          background-color: #e9ecef;       /* light gray on hover */
+          color: #0d6efd;                  /* Bootstrap primary color text */
+          transform: translateX(3px);      /* small slide to the right */
+          box-shadow: inset 4px 0 #0d6efd; /* blue accent bar on the left */
+        }
+
+        /* Active or currently selected link */
+        #sidebar-wrapper .list-group-item.active {
+          background-color: #0d6efd;
+          color: white;
+          font-weight: bold;
+          box-shadow: inset 4px 0 #084298;
+        }
+
+        /* Logout link special hover */
+        #sidebar-wrapper .list-group-item.text-danger:hover {
+          background-color: #f8d7da;
+          color: #842029;
+          box-shadow: inset 4px 0 #dc3545; /* red accent */
+        }
+
+        /* Navbar hover and link effects */
+.navbar-nav .nav-link {
+    transition: color 0.3s, background-color 0.3s;
+    border-radius: 5px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+/* Active link highlighting */
+.navbar-nav .nav-link.active {
+    color: #fff;
+    background-color: #0d6efd;
+}
+
+/* Notification badge pulse animation */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.pulse-badge {
+    animation: pulse 1s infinite;
+}
+
+/* Cart hover effect */
+.cart-link .fa-shopping-cart:hover {
+    transform: scale(1.2);
+    transition: transform 0.3s;
+}
+
+/* Optional: subtle shadow (already added via shadow-sm class) */
+        .product-card .product-img {
+        height: 200px; /* Fixed height for all images */
+        object-fit: cover; /* Crops image to cover the area without distortion */
+        width: 100%; /* Ensure it spans the full width */
+        border-bottom: 1px solid #eee; /* Optional subtle separator */
+    }
+
+    .product-card .card-body {
+        padding: 15px; /* Adjust padding as needed */
+    }
+
+    .product-card .card-title {
+        font-size: 1rem; /* Adjust font size for title */
+        white-space: nowrap; /* Prevents wrapping, use text-truncate class */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .product-card .card-text strong {
+        font-size: 1.1rem; /* Slightly larger for price */
+    }
+
+    .product-card .card-text .text-decoration-line-through {
+        font-size: 0.9rem; /* Smaller for original price */
+    }
+
+    /* General improvements to form elements for consistent height */
+    .form-control, .form-select {
+        height: 38px; /* Standard height for Bootstrap form controls */
+    }
+
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        {% if user.is_authenticated and user.is_superuser %}
+            {% include 'partials/sidebar.html' %}
+        {% endif %}
+
+        <!-- Page content -->
+        <div id="page-content-wrapper">
+            {% include 'partials/navbar.html' %}
+            <div class="container-fluid p-4">
+                {% include 'partials/messages.html' %}
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS + Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Sidebar toggle script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleButton = document.getElementById('sidebarToggle');
+            const wrapper = document.getElementById('wrapper');
+
+            if (toggleButton) {
+                toggleButton.addEventListener('click', () => {
+                    wrapper.classList.toggle('toggled');
+                });
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

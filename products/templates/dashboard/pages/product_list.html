@@ -1,0 +1,480 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block extra_css %}
+<style>
+  /* Enhanced Modern Styles */
+  :root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow-light: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --shadow-heavy: 0 20px 60px rgba(0, 0, 0, 0.15);
+  }
+
+  body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  /* Page Title Enhancement */
+  .page-title {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    font-size: 2.2rem;
+    background: var(--dark-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .page-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--primary-gradient);
+    border-radius: 2px;
+    animation: slideIn 0.8s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      width: 0;
+    }
+    to {
+      width: 60px;
+    }
+  }
+
+  /* Enhanced Filter Section */
+  .filter-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-light);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .filter-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.02) 0%, rgba(118, 75, 162, 0.02) 100%);
+    pointer-events: none;
+  }
+
+  .filter-section .form-control,
+  .filter-section .form-select {
+    border: 2px solid rgba(102, 126, 234, 0.1);
+    border-radius: 12px;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+  }
+
+  .filter-section .form-control:focus,
+  .filter-section .form-select:focus {
+    border-color: rgba(102, 126, 234, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  .filter-section .btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  .filter-section .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  }
+
+  /* Product Cards Modern Design */
+  .product-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: relative;
+  }
+
+  .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .product-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .product-card:hover::before {
+    opacity: 1;
+  }
+
+  .product-card img {
+    height: 250px;
+    object-fit: cover;
+    object-position: center;
+    transition: all 0.4s ease;
+    filter: brightness(0.95);
+  }
+
+  .product-card:hover img {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+
+  .card-body {
+    padding: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    color: #2d3748;
+  }
+
+  .card-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #718096;
+  }
+
+  /* Enhanced Discount Badge */
+  .discount-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--secondary-gradient);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.8em;
+    font-weight: 700;
+    z-index: 2;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  /* Price Section Enhancement */
+  .price-section {
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .original-price {
+    text-decoration: line-through;
+    color: #a0aec0;
+    font-size: 0.9em;
+    font-weight: 400;
+  }
+
+  .discounted-price {
+    background: var(--secondary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    font-size: 1.2em;
+  }
+
+  .regular-price {
+    background: var(--success-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    font-size: 1.1em;
+  }
+
+  /* Enhanced Buttons */
+  .btn-primary.w-100 {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary.w-100:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    color: white;
+  }
+
+  /* Enhanced Pagination */
+  .pagination {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 1rem 2rem;
+    box-shadow: var(--shadow-light);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 3rem;
+  }
+
+  .pagination .page-link {
+    background: transparent;
+    border: none;
+    color: #667eea;
+    padding: 10px 15px;
+    margin: 0 5px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .pagination .page-link:hover {
+    background: var(--primary-gradient);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  .pagination .page-item.active .page-link {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  /* Container Enhancement */
+  .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Loading Animation for Images */
+  .product-card img {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-in-out forwards;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Responsive Enhancements */
+  @media (max-width: 768px) {
+    .page-title {
+      font-size: 1.8rem;
+    }
+
+    .product-card img {
+      height: 200px;
+    }
+
+    .filter-section {
+      padding: 1.5rem;
+    }
+
+    .pagination {
+      padding: 0.5rem 1rem;
+    }
+  }
+
+  /* No Products Message Enhancement */
+  .no-products {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    margin: 2rem 0;
+    box-shadow: var(--shadow-light);
+  }
+
+  .no-products h3 {
+    color: #718096;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .no-products p {
+    color: #a0aec0;
+    font-size: 1.1rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="page-title mb-3">All Products</h2>
+
+    <!-- Search & Filters -->
+    <div class="filter-section">
+        <form method="get" class="row">
+            <div class="col-md-3 mb-3">
+                <label class="form-label">Search</label>
+                <input type="text" name="q" placeholder="Search products..." value="{{ search_query }}" class="form-control">
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Category</label>
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    {% for value, label in categories %}
+                        <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Brand</label>
+                <select name="brand" class="form-select">
+                    <option value="">All Brands</option>
+                    {% for brand in brands %}
+                        <option value="{{ brand.id }}" {% if selected_brand == brand.id|stringformat:"s" %}selected{% endif %}>
+                            {{ brand.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Min Price</label>
+                <input type="number" name="min_price" placeholder="Min Price" class="form-control" value="{{ request.GET.min_price }}">
+            </div>
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Max Price</label>
+                <input type="number" name="max_price" placeholder="Max Price" class="form-control" value="{{ request.GET.max_price }}">
+            </div>
+            <div class="col-md-1 mb-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="row">
+        {% for product in products %}
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card h-100 product-card">
+                <div class="position-relative">
+                    {% if product.get_discounted_price < product.price %}
+                        <div class="discount-badge">
+                            SALE
+                        </div>
+                    {% endif %}
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="/path/to/placeholder_image.jpg" class="card-img-top" alt="No image available">
+                    {% endif %}
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h6 class="card-title">{{ product.name }}</h6>
+                    <div class="price-section mt-auto">
+                        {% if product.get_discounted_price < product.price %}
+                            <span class="original-price">${{ product.price }}</span><br>
+                            <span class="discounted-price">${{ product.get_discounted_price }}</span>
+                        {% else %}
+                            <span class="regular-price">${{ product.get_discounted_price }}</span>
+                        {% endif %}
+                        <div class="mt-3">
+                            <a href="{% url 'product_detail' product.pk %}" class="btn btn-primary w-100">View Product</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="no-products">
+                <h3>No Products Found</h3>
+                <p>Try adjusting your search criteria or browse all categories.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if products.has_other_pages %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if products.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ products.previous_page_number }}&q={{ request.GET.q }}&category={{ request.GET.category }}&brand={{ request.GET.brand }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}">
+                        Previous
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}&q={{ request.GET.q }}&category={{ request.GET.category }}&brand={{ request.GET.brand }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}">
+                            {{ num }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if products.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ products.next_page_number }}&q={{ request.GET.q }}&category={{ request.GET.category }}&brand={{ request.GET.brand }}&min_price={{ request.GET.min_price }}&max_price={{ request.GET.max_price }}">
+                        Next
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% endblock %}

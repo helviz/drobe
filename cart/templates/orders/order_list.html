@@ -1,46 +1,742 @@
 {% extends "base.html" %}
 {% block title %}My Orders{% endblock %}
 
-{% block content %}
-<h1 class="mb-4 fw-bold">My Orders</h1>
+{% block extra_css %}
+<style>
+  /* --- Variables & Base Styles (mostly kept as is, slight tweaks) --- */
+  :root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --accent-color: #00f2fe;
+    --danger-color: #ef4444; /* Added for consistency */
+    --warning-color: #f59e0b; /* Added for consistency */
+    --success-color: #22c55e; /* Added for consistency */
 
-{% if orders %}
-<table class="table table-bordered table-hover">
-    <thead class="table-light">
-        <tr>
-            <th>ID</th>
-            <th>Date</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Update</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in orders %}
-        <tr>
-            <td>#{{ order.id }}</td>
-            <td>{{ order.date|date:"Y-m-d H:i" }}</td>
-            <td>${{ order.get_total|floatformat:2 }}</td>
-            <td>
-                <form method="post" class="d-flex align-items-center">
-                    {% csrf_token %}
-                    <input type="hidden" name="order_id" value="{{ order.id }}">
-                    <select name="status" class="form-select form-select-sm me-2">
-                        {% for value,label in order.STATUS_CHOICES %}
-                            <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>
-                                {{ label }}
-                            </option>
+    --primary-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); /* Adjusted slightly */
+    --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    --shadow-light: 0 10px 40px rgba(0, 0, 0, 0.08); /* Slightly more prominent */
+    --shadow-hover: 0 25px 80px rgba(0, 0, 0, 0.15); /* Stronger hover shadow */
+  }
+
+  body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif; /* Recommended font for modern UI */
+    color: #333;
+  }
+
+  /* --- Page Header --- */
+  .page-header {
+    background: rgba(255, 255, 255, 0.9); /* Slightly less opaque */
+    backdrop-filter: blur(12px); /* Slightly more blur */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Stronger border for definition */
+    border-radius: 25px; /* Slightly more rounded */
+    padding: 2.5rem; /* More padding */
+    margin-bottom: 2.5rem; /* More margin */
+    box-shadow: var(--shadow-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* If you add elements to the right */
+  }
+
+  .page-title {
+    background: var(--dark-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800; /* Bolder */
+    font-size: 3rem; /* Larger title */
+    margin: 0;
+  }
+
+  /* --- Charts Container --- */
+  .charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Adapt for smaller screens */
+    gap: 1.5rem; /* Reduced gap for a tighter feel */
+    margin-bottom: 2.5rem;
+  }
+
+  .chart-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: 2rem;
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
+  }
+
+  .chart-card:hover {
+    box-shadow: var(--shadow-hover); /* Stronger hover effect */
+    transform: translateY(-5px); /* More noticeable lift */
+  }
+
+  .chart-title {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    font-size: 1.4rem; /* Slightly larger */
+    margin-bottom: 1.8rem; /* More space below title */
+    text-align: center; /* Center chart titles */
+  }
+
+  .chart-wrapper {
+    position: relative;
+    height: 280px; /* Consistent height for smaller charts */
+  }
+
+  .chart-wrapper.tall {
+    height: 380px; /* Slightly adjusted for larger charts */
+  }
+
+  /* --- Orders Table Container --- */
+  .orders-table-container {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    padding: 2.5rem; /* More padding */
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+  }
+
+  .table {
+    margin-bottom: 0;
+    border-collapse: separate; /* Allows border-radius on cells/rows */
+    border-spacing: 0 0.8rem; /* Space between rows */
+  }
+
+  .table thead {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%); /* Lighter gradient */
+    border-radius: 15px; /* Rounded corners for the header */
+  }
+
+  .table thead th {
+    border: none;
+    color: #2d3748;
+    font-weight: 700; /* Bolder */
+    padding: 1.2rem 1.5rem; /* More padding */
+    font-size: 0.95rem;
+  }
+
+  .table tbody tr {
+    background-color: rgba(255, 255, 255, 0.7); /* Give rows a slight background */
+    border-radius: 15px; /* Rounded corners for rows */
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Subtle shadow for rows */
+  }
+
+  .table tbody tr:hover {
+    background: rgba(102, 126, 234, 0.08); /* Lighter hover background */
+    transform: translateY(-3px); /* More noticeable lift */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+
+  .table tbody td {
+    border: none; /* Remove default table cell borders */
+    padding: 1rem 1.5rem;
+    color: #4a5568;
+  }
+  .table tbody tr:first-child td:first-child { border-top-left-radius: 15px; }
+  .table tbody tr:first-child td:last-child { border-top-right-radius: 15px; }
+  .table tbody tr:last-child td:first-child { border-bottom-left-radius: 15px; }
+  .table tbody tr:last-child td:last-child { border-bottom-right-radius: 15px; }
+
+
+  .form-select-sm {
+    border: 1px solid rgba(102, 126, 234, 0.3); /* Softer border */
+    border-radius: 10px; /* More rounded */
+    padding: 0.6rem 1rem; /* More padding */
+    font-size: 0.9rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+  }
+
+  .form-select-sm:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.2);
+    background-color: #fff;
+  }
+
+  .btn-primary.btn-sm {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 10px; /* More rounded */
+    padding: 0.6rem 1.2rem; /* More padding */
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary.btn-sm:hover {
+    transform: translateY(-3px); /* More noticeable lift */
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  }
+
+  /* --- Status Badges (tweaked for better contrast) --- */
+  .status-badge {
+    padding: 0.6rem 1.2rem; /* More padding */
+    border-radius: 25px; /* More rounded */
+    font-weight: 600;
+    font-size: 0.8rem; /* Slightly smaller for compactness */
+    display: inline-flex; /* For better alignment */
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .status-pending {
+    background: rgba(251, 191, 36, 0.15); /* Lighter background */
+    color: #b45309; /* Darker, more prominent text */
+  }
+
+  .status-shipped {
+    background: rgba(79, 172, 254, 0.15);
+    color: #0369a1;
+  }
+
+  .status-delivered {
+    background: rgba(34, 197, 94, 0.15);
+    color: #16a34a;
+  }
+
+  .status-returned {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+  }
+
+  /* --- Empty State --- */
+  .empty-state {
+    text-align: center;
+    padding: 4rem; /* More padding */
+    color: #718096;
+    background-color: rgba(255, 255, 255, 0.7); /* Soft background */
+    border-radius: 20px;
+  }
+  .empty-state i {
+    color: #a0aec0; /* Softer icon color */
+  }
+  .empty-state p {
+      margin-bottom: 0.5rem;
+  }
+  .empty-state .fs-5 {
+      font-weight: 600;
+      color: #2d3748;
+  }
+
+  /* --- Chart.js Tooltip Customization (to match UI) --- */
+  .chartjs-tooltip {
+      opacity: 1 !important; /* Always show for design */
+      background: rgba(45, 55, 72, 0.9) !important;
+      border-radius: 8px !important;
+      padding: 10px 15px !important;
+      font-family: 'Inter', sans-serif !important;
+  }
+  .chartjs-tooltip-title {
+      color: #f7fafc !important;
+      font-size: 14px !important;
+      font-weight: bold !important;
+      margin-bottom: 5px !important;
+  }
+  .chartjs-tooltip-body {
+      color: #e2e8f0 !important;
+      font-size: 13px !important;
+  }
+
+  /* --- Responsive Adjustments --- */
+  @media (max-width: 992px) { /* Adjust breakpoint for larger tablets */
+    .page-title {
+        font-size: 2.5rem;
+    }
+    .charts-container {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.2rem;
+    }
+    .chart-card {
+        padding: 1.5rem;
+    }
+    .chart-title {
+        font-size: 1.2rem;
+        margin-bottom: 1.2rem;
+    }
+    .chart-wrapper, .chart-wrapper.tall {
+        height: 250px;
+    }
+    .orders-table-container {
+        padding: 1.5rem;
+    }
+    .table thead th, .table tbody td {
+        padding: 0.8rem 1rem;
+        font-size: 0.85rem;
+    }
+    .table tbody tr {
+        border-spacing: 0 0.5rem;
+    }
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+    }
+    .form-select-sm, .btn-primary.btn-sm {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .page-header {
+        padding: 1.5rem;
+        border-radius: 20px;
+    }
+    .page-title {
+        font-size: 2rem;
+    }
+    .charts-container {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .chart-card {
+        padding: 1rem;
+        border-radius: 20px;
+    }
+    .chart-title {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    .chart-wrapper, .chart-wrapper.tall {
+        height: 200px;
+    }
+    .orders-table-container {
+        padding: 1rem;
+        border-radius: 20px;
+    }
+    .table thead th, .table tbody td {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.75rem;
+    }
+    .table thead {
+        border-radius: 10px;
+    }
+    .table tbody tr {
+        border-radius: 10px;
+    }
+    .status-badge {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.8rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="page-header">
+        <h1 class="page-title">My Orders</h1>
+        <!-- Optional: Add a subtle user avatar or greeting here -->
+    </div>
+
+    {% if orders %}
+        <!-- Charts Section -->
+        <div class="charts-container">
+            <!-- Status Distribution Chart -->
+            <div class="chart-card">
+                <h3 class="chart-title">Order Status Distribution</h3>
+                <div class="chart-wrapper">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Orders Over Time (Line Chart) -->
+            <div class="chart-card">
+                <h3 class="chart-title">Orders Over Time (Last 30 Days)</h3>
+                <div class="chart-wrapper">
+                    <canvas id="ordersTimeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily/Weekly/Monthly Totals -->
+        <div class="charts-container">
+            <!-- Daily Totals -->
+            <div class="chart-card">
+                <h3 class="chart-title">Daily Order Volume</h3>
+                <div class="chart-wrapper tall">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Weekly Totals -->
+            <div class="chart-card">
+                <h3 class="chart-title">Weekly Order Volume</h3>
+                <div class="chart-wrapper tall">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Monthly Totals -->
+            <div class="chart-card">
+                <h3 class="chart-title">Monthly Order Volume</h3>
+                <div class="chart-wrapper tall">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="orders-table-container">
+            <h3 class="chart-title mb-4">All Orders</h3> {# Re-using chart-title for consistency #}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td class="fw-bold">#{{ order.id }}</td>
+                            <td>{{ order.date|date:"M d, Y H:i" }}</td>
+                            <td class="fw-semibold">Ugx {{ order.get_total|floatformat:0 }}</td>
+                            <td>
+                                <span class="status-badge status-{{ order.status }}">
+                                    <!-- Optional: Add an icon next to status text -->
+                                    {% if order.status == 'delivered' %}<i class="fas fa-check-circle"></i>
+                                    {% elif order.status == 'shipped' %}<i class="fas fa-truck"></i>
+                                    {% elif order.status == 'pending' %}<i class="fas fa-clock"></i>
+                                    {% elif order.status == 'returned' %}<i class="fas fa-undo-alt"></i>
+                                    {% endif %}
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <form method="post" class="d-flex align-items-center gap-2">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                    <select name="status" class="form-select form-select-sm" style="width: auto;">
+                                        {% for value, label in order.STATUS_CHOICES %}
+                                            <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                </form>
+                            </td>
+                        </tr>
                         {% endfor %}
-                    </select>
-                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                </form>
-            </td>
-            <td>{{ order.status|title }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p class="text-muted">You have no orders yet.</p>
-{% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="orders-table-container">
+            <div class="empty-state">
+                <i class="fas fa-shopping-bag fa-3x mb-3" style="color: #cbd5e0;"></i>
+                <p class="fs-5">You have no orders yet.</p>
+                <p>Start shopping to see your orders here!</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- For better date handling in Chart.js v3+ -->
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% if orders %}
+
+    // --- Chart.js Global Defaults (Optional, but good for consistency) ---
+    Chart.defaults.font.family = 'Inter, sans-serif';
+    Chart.defaults.color = '#5a677d'; // Default text color for charts
+    Chart.defaults.borderColor = 'rgba(0,0,0,0.08)'; // Default grid line color
+
+    // Function to create a generic bar chart
+    function createBarChart(ctx, labels, data, label, bgColor, bdColor) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: label,
+                    data: data,
+                    backgroundColor: bgColor,
+                    borderColor: bdColor,
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    hoverBackgroundColor: bdColor, // Darker on hover
+                    hoverBorderColor: bdColor
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(45, 55, 72, 0.9)',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45,
+                            font: { size: 10 },
+                            color: '#4a5568'
+                        },
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: { size: 12 },
+                            color: '#4a5568'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    }
+
+    // Status Distribution - Horizontal Bar Chart
+    const statusCtx = document.getElementById('statusChart');
+    if (statusCtx) {
+        const statusData = [
+            {% for item in status_chart_data %}
+                {{ item.count }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        const statusLabels = [
+            {% for item in status_chart_data %}
+                '{{ item.label }}'{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        new Chart(statusCtx, {
+            type: 'bar',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    label: 'Number of Orders',
+                    data: statusData,
+                    backgroundColor: [
+                        'rgba(34, 197, 94, 0.7)',   // Delivered - green
+                        'rgba(79, 172, 254, 0.7)',  // Shipped - blue
+                        'rgba(251, 191, 36, 0.7)',  // Pending - yellow
+                        'rgba(239, 68, 68, 0.7)'    // Returned - red
+                    ],
+                    borderColor: [
+                        'rgba(21, 128, 61, 1)',
+                        'rgba(3, 105, 161, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(185, 28, 28, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    barThickness: 30 // Slightly thinner bars for horizontal
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(45, 55, 72, 0.9)',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: { size: 12 },
+                            color: '#4a5568'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            font: { size: 13, weight: '500' },
+                            color: '#2d3748'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    }
+
+    // Orders Over Time - Line Chart (Last 30 Days)
+    const timeCtx = document.getElementById('ordersTimeChart');
+    if (timeCtx) {
+        const dailyData = [
+            {% for item in daily_orders %}
+                { x: '{{ item.day|date:"Y-m-d" }}', y: {{ item.count }} }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        new Chart(timeCtx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Orders',
+                    data: dailyData,
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(45, 55, 72, 0.9)',
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            tooltipFormat: 'MMM D, YYYY',
+                            displayFormats: {
+                                day: 'MMM D'
+                            }
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45,
+                            font: { size: 10 },
+                            color: '#4a5568'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            font: { size: 12 },
+                            color: '#4a5568'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
+                }
+            }
+        });
+    }
+
+    // Daily Bar Chart
+    const dailyCtx = document.getElementById('dailyChart');
+    if (dailyCtx) {
+        const dailyData = [
+            {% for item in daily_orders %}
+                {{ item.count }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+        const dailyLabels = [
+            {% for item in daily_orders %}
+                '{{ item.day|date:"M d" }}'{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+        createBarChart(dailyCtx, dailyLabels, dailyData, 'Daily Orders', 'rgba(79, 172, 254, 0.7)', 'rgba(3, 105, 161, 1)');
+    }
+
+    // Weekly Bar Chart
+    const weeklyCtx = document.getElementById('weeklyChart');
+    if (weeklyCtx) {
+        const weeklyData = [
+            {% for item in weekly_orders %}
+                {{ item.count }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+        const weeklyLabels = [
+            {% for item in weekly_orders %}
+                'Week of {{ item.week|date:"M d" }}'{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+        createBarChart(weeklyCtx, weeklyLabels, weeklyData, 'Weekly Orders', 'rgba(251, 191, 36, 0.7)', 'rgba(245, 158, 11, 1)');
+    }
+
+    // Monthly Bar Chart
+    const monthlyCtx = document.getElementById('monthlyChart');
+    if (monthlyCtx) {
+        const monthlyData = [
+            {% for item in monthly_orders %}
+                {{ item.count }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+        const monthlyLabels = [
+            {% for item in monthly_orders %}
+                '{{ item.month|date:"M Y" }}'{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+        createBarChart(monthlyCtx, monthlyLabels, monthlyData, 'Monthly Orders', 'rgba(240, 147, 251, 0.7)', 'rgba(245, 87, 108, 1)');
+    }
+
+    {% endif %}
+});
+</script>
 {% endblock %}

@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <!-- Header Section -->
+            <div class="d-flex align-items-center mb-4">
+                <i class="bi bi-tag-fill text-primary me-2 fs-3"></i>
+                <h2 class="mb-0">{% if view.object %}Edit Brand{% else %}Add New Brand{% endif %}</h2>
+            </div>
+
+            <!-- Form Card -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Brand Information
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        {% for field in form %}
+                            <div class="mb-4">
+                                <!-- Field Label -->
+                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold text-dark">
+                                    {{ field.label }}
+                                    {% if field.field.required %}
+                                        <span class="text-danger">*</span>
+                                    {% endif %}
+                                </label>
+
+                                <!-- Field Input with Enhanced Styling -->
+                                {% if field.field.widget.input_type == 'file' %}
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light">
+                                            <i class="bi bi-cloud-upload"></i>
+                                        </span>
+                                        {{ field|add_class:"form-control" }}
+                                    </div>
+                                {% elif field.field.widget.input_type == 'textarea' %}
+                                    {{ field|add_class:"form-control" }}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                {% elif field.field.widget.input_type == 'select' %}
+                                    {{ field|add_class:"form-select" }}
+                                {% else %}
+                                    <div class="input-group">
+                                        {% if 'name' in field.name %}
+                                            <span class="input-group-text bg-light">
+                                                <i class="bi bi-building"></i>
+                                            </span>
+                                        {% elif 'email' in field.name %}
+                                            <span class="input-group-text bg-light">
+                                                <i class="bi bi-envelope"></i>
+                                            </span>
+                                        {% elif 'phone' in field.name %}
+                                            <span class="input-group-text bg-light">
+                                                <i class="bi bi-telephone"></i>
+                                            </span>
+                                        {% elif 'website' in field.name or 'url' in field.name %}
+                                            <span class="input-group-text bg-light">
+                                                <i class="bi bi-globe"></i>
+                                            </span>
+                                        {% else %}
+                                            <span class="input-group-text bg-light">
+                                                <i class="bi bi-pencil"></i>
+                                            </span>
+                                        {% endif %}
+                                        {{ field|add_class:"form-control" }}
+                                    </div>
+                                {% endif %}
+
+                                <!-- Field Help Text -->
+                                {% if field.help_text %}
+                                    <div class="form-text text-muted">{{ field.help_text }}</div>
+                                {% endif %}
+
+                                <!-- Field Errors -->
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <div class="text-muted small">
+                                <span class="text-danger">*</span> Required fields
+                            </div>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'brand-list' %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-1"></i>Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg me-1"></i>
+                                    {% if view.object %}Update Brand{% else %}Save Brand{% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Info Card (Optional) -->
+            {% if not view.object %}
+            <div class="card mt-3 border-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill text-info me-2"></i>
+                        <small class="text-muted">
+                            Once saved, you'll be able to associate products with this brand.
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for enhanced styling -->
+<style>
+/* Base card styling */
+.card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05); /* Added a very light border for definition */
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important; /* Slightly more prominent shadow on hover */
+}
+
+/* Form control styling */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #d1d5db; /* Lighter, more subtle border color */
+    transition: all 0.2s ease-in-out;
+    padding: 10px 14px; /* Slightly adjusted padding for a compact look */
+    background-color: #f9fafb; /* Light background for inputs */
+    font-size: 0.95rem; /* Slightly smaller font for inputs */
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    background-color: #ffffff; /* White background on focus */
+}
+
+/* Input group text styling */
+.input-group-text {
+    border-radius: 8px 0 0 8px;
+    border: 1px solid #d1d5db; /* Matching border color */
+    border-right: none;
+    background-color: #eef2f6; /* Slightly darker light background */
+    color: #6c757d; /* Muted icon color */
+    padding: 10px 12px;
+}
+
+.input-group .form-control {
+    border-radius: 0 8px 8px 0;
+    border-left: 1px solid #d1d5db; /* Ensure left border also matches */
+}
+
+/* Focus state for input group - making the entire group highlight */
+.input-group:focus-within .input-group-text {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    z-index: 2; /* Bring icon text to front to prevent border overlap issues */
+}
+.input-group:focus-within .form-control {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+
+/* Button styling */
+.btn {
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600; /* Slightly bolder text for buttons */
+    transition: all 0.2s ease-in-out;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+    border: none; /* Remove default border to rely on gradient */
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #0d6efd 100%); /* Reverse gradient on hover */
+    box-shadow: 0 6px 15px rgba(13, 110, 253, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-outline-secondary {
+    border-color: #ced4da;
+    color: #495057;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+    color: #343a40;
+    transform: translateY(-2px);
+}
+
+/* Card header styling */
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    border-bottom: none;
+    background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%) !important;
+    padding: 1rem 1.5rem; /* More balanced padding */
+}
+
+.card-title {
+    font-size: 1.15rem; /* Slightly larger title in card header */
+}
+
+/* Labels and help text */
+.form-label {
+    margin-bottom: 0.6rem; /* More space below labels */
+    font-size: 0.9rem; /* Slightly smaller label font for cleaner look */
+    color: #343a40; /* Darker label color */
+}
+
+.form-text, .text-muted.small {
+    font-size: 0.85rem; /* Consistent smaller font for help/muted text */
+    color: #6c757d !important; /* Ensuring consistent muted color */
+    margin-top: 0.3rem; /* Tighter spacing for help text */
+}
+
+.invalid-feedback {
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    color: #dc3545; /* Ensuring strong red for errors */
+}
+
+/* Header section */
+.d-flex.align-items-center.mb-4 h2 {
+    font-size: 1.8rem; /* Larger main title */
+    color: #343a40;
+}
+
+.d-flex.align-items-center.mb-4 .fs-3 {
+    font-size: 2.2rem !important; /* Larger icon in header */
+    color: #0d6efd;
+}
+
+/* Optional info card */
+.card.border-info {
+    border: 1px solid #0dcaf0; /* Refined info border color */
+    background-color: #e0f7fa; /* Light cyan background */
+}
+
+.card.border-info .bi-info-circle-fill {
+    color: #0dcaf0 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.75rem; /* Add gap between stacked buttons */
+    }
+
+    .btn-group .btn {
+        margin-bottom: 0; /* Remove individual margin if gap is used */
+        width: 100%; /* Make buttons full width when stacked */
+    }
+
+    .d-flex.justify-content-between {
+        flex-direction: column-reverse; /* Put required fields info above buttons */
+        gap: 1.5rem; /* More space between sections when stacked */
+        align-items: flex-start !important; /* Align required text to start */
+    }
+}
+</style>
+{% endblock %}
